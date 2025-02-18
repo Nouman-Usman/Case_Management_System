@@ -9,6 +9,7 @@ const client = new Client()
 
 const client_account = new Account(client);
 
+
 export const loginWithGoogle = async () => {
   try {    
     console.log("Logging in with Google");
