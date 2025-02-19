@@ -13,10 +13,11 @@
 
 import { Client, Databases, Account } from "appwrite";
 
-const PROJECT_ID = process.env.PROJECT_ID!;
-const ENDPOINT = process.env.ENDPOINT_URL!;
-const DATABASE_ID = process.env.DATABSE_ID!;
-const USER_COLLECTION_ID = process.env.USER_ID!;
+const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID!;
+const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT_URL!;
+const DATABASE_ID = process.env.NEXT_PUBLIC_DATABASE_ID!;
+const USER_COLLECTION_ID = process.env.NEXT_PUBLIC_USER_COLLECTION_ID!;
+
 
 const client = new Client()
   .setEndpoint(ENDPOINT)
