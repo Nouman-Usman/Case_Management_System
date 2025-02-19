@@ -14,7 +14,7 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle login logic here (e.g., API call)
-    console.log("Logging in with:", email, password);
+    console.log("Logging in with: ", email, password);
   };
 
   return (
