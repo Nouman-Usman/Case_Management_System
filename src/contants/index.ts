@@ -1,88 +1,179 @@
-export type Gender = "Male" | "Female" | "Other";
-export const appName = "Hi Law"
-export const GenderOptions = ["Male", "Female", "Other"];
-
-export const PatientFormDefaultValues = {
-  firstName: "",
-  lastName: "",
+export const defaultCreateUserParams = {
   email: "",
   phone: "",
-  birthDate: new Date(Date.now()),
-  gender: "Male" as Gender,
-  address: "",
-  occupation: "",
-  emergencyContactName: "",
-  emergencyContactNumber: "",
-  primaryPhysician: "",
-  insuranceProvider: "",
-  insurancePolicyNumber: "",
-  allergies: "",
-  currentMedication: "",
-  familyMedicalHistory: "",
-  pastMedicalHistory: "",
-  identificationType: "Birth Certificate",
-  identificationNumber: "",
-  identificationDocument: [],
-  treatmentConsent: false,
-  disclosureConsent: false,
-  privacyConsent: false,
+  password: "",
 };
 
-export const IdentificationTypes = [
-  "Birth Certificate",
-  "Driver's License",
-  "Medical Insurance Card/Policy",
-  "Military ID Card",
-  "National Identity Card",
-  "Passport",
-  "Resident Alien Card (Green Card)",
-  "Social Security Card",
-  "State ID Card",
-  "Student ID Card",
-  "Voter ID Card",
-];
+export const defaultLoginUserParams = {
+  email: "",
+  password: "",
+};
 
-export const Doctors = [
-  {
-    image: "/assets/images/dr-green.png",
-    name: "John Green",
-  },
-  {
-    image: "/assets/images/dr-cameron.png",
-    name: "Leila Cameron",
-  },
-  {
-    image: "/assets/images/dr-livingston.png",
-    name: "David Livingston",
-  },
-  {
-    image: "/assets/images/dr-peter.png",
-    name: "Evan Peter",
-  },
-  {
-    image: "/assets/images/dr-powell.png",
-    name: "Jane Powell",
-  },
-  {
-    image: "/assets/images/dr-remirez.png",
-    name: "Alex Ramirez",
-  },
-  {
-    image: "/assets/images/dr-lee.png",
-    name: "Jasmine Lee",
-  },
-  {
-    image: "/assets/images/dr-cruz.png",
-    name: "Alyana Cruz",
-  },
-  {
-    image: "/assets/images/dr-sharma.png",
-    name: "Hardik Sharma",
-  },
-];
+export const defaultResetPasswordParams = {
+  email: "",
+};
 
-export const StatusIcon = {
-  scheduled: "/assets/icons/check.svg",
-  pending: "/assets/icons/pending.svg",
-  cancelled: "/assets/icons/cancelled.svg",
+export const defaultUpdateUserParams = {
+  email: "",
+  phone: "",
+};
+
+export const defaultDeleteUserParams = {
+  email: "",
+};
+
+export const defaultLawyerProfile = {
+  email: "",
+  name: "",
+  phone: "",
+  address: "",
+  city: "",
+  state: "",
+  zip: "",
+  country: "",
+  practiceAreas: [],
+  experience: "",
+  education: "",
+  languages: [],
+  consultationFees: 0,
+  rating: 0,
+  reviews: [],
+  casesHandled: 0,
+  casesWon: 0,
+  casesLost: 0,
+  profilePic: "",
+};
+
+export const defaultClientProfile = {
+  email: "",
+  name: "",
+  phone: "",
+  address: "",
+  city: "",
+  state: "",
+  zip: "",
+  country: "",
+  casesInvolved: [],
+  profilePic: "",
+};
+
+export const defaultChamberProfile = {
+  email: "",
+  name: "",
+  phone: "",
+  address: "",
+  city: "",
+  state: "",
+  zip: "",
+  country: "",
+  casesHandled: [],
+  chamberLogo: "",
+};
+
+export const defaultAssistantProfile = {
+  userId: "",
+  email: "",
+  name: "",
+  phone: "",
+  address: "",
+  city: "",
+  state: "",
+  zip: "",
+  country: "",
+  casesAssisted: [],
+  profilePic: "",
+  roles: [],
+};
+
+export const defaultSubscription = {
+  userId: "",
+  subscriptionId: "",
+  subscriptionType: "",
+  subscriptionAmount: 0,
+  subscriptionDate: "",
+  subscriptionExpiry: "",
+  subscriptionStatus: "",
+};
+
+export const defaultCase = {
+  userId: "",
+  caseId: "",
+  caseType: "",
+  caseTitle: "",
+  caseDescription: "",
+  caseStatus: "",
+  caseDate: "",
+  clientId: "",
+  lawyerId: "",
+  chamberId: "",
+  assistantId: "",
+  hearingDate: "",
+  hearingTime: "",
+  hearingVenue: "",
+  documents: [],
+  notes: "",
+  rating: 0,
+  review: "",
+};
+
+export const defaultDocument = {
+  userId: "",
+  documentId: "",
+  documentName: "",
+  documentType: "",
+  documentUrl: "",
+  documentDate: "",
+  caseId: "",
+};
+
+export const defaultReminder = {
+  userId: "",
+  reminderId: "",
+  reminderTitle: "",
+  reminderDescription: "",
+  reminderDate: "",
+  reminderTime: "",
+  reminderStatus: "",
+};
+
+export const defaultLegalDocument = {
+  documentId: "",
+  userId: "",
+  caseId: "",
+  documentName: "",
+  documentType: "",
+  documentUrl: "",
+  uploadDate: "",
+  uploadedBy: "",
+};
+
+export const defaultFeedback = {
+  feedbackId: "",
+  userId: "",
+  caseId: "",
+  rating: 0,
+  comment: "",
+  feedbackDate: "",
+};
+
+export const defaultAppointment = {
+  appointmentId: "",
+  userId: "",
+  lawyerId: "",
+  clientId: "",
+  appointmentDate: "",
+  appointmentTime: "",
+  appointmentType: "",
+  appointmentStatus: "",
+  notes: "",
+};
+
+export const defaultAnnouncements = {
+  announcementId: "",
+  announcementTitle: "",
+  announcementDescription: "",
+  announcementDate: "",
+  announcementTime: "",
+  announcementStatus: "",
+  announcementMedia: "",
 };
