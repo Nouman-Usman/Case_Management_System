@@ -177,14 +177,3 @@ export const defaultAnnouncements = {
   announcementStatus: "",
   announcementMedia: "",
 };
-
-export const defaultDraftedDocuments = {
-  userId: "",
-  clientId: "",
-  caseId: "",
-  documentId: "",
-  documentName: "",
-  documentType: "",
-  documentUrl: "",
-  documentDate: "",
-}
