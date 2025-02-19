@@ -175,3 +175,14 @@ declare interface Announcements{
   announcementStatus: string;
   announcementMedia: string;
 }
+
+declare interface DraftedDocuments{
+  userId: string;
+  clientId: string;
+  caseId: string;
+  documentId: string;
+  documentName: string;
+  documentType: string;
+  documentUrl: string;
+  documentDate: string;
+}
