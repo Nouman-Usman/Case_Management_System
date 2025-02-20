@@ -11,7 +11,7 @@
 // export const account = new sdk.Account(client);
 
 
-import { Client, Databases, Account } from "appwrite";
+import { Client, Databases, Account, Users } from "node-appwrite";
 
 const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID!;
 const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT_URL!;
@@ -25,6 +25,7 @@ const client = new Client()
 
 const account = new Account(client);
 const databases = new Databases(client);
+const users = new Users(client);
 
-export { client, account, databases, DATABASE_ID, USER_COLLECTION_ID };
+export { client, account, databases, users, DATABASE_ID, USER_COLLECTION_ID };
 
