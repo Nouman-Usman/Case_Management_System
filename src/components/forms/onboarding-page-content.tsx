@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { updateUserRole } from "@/backend/auth/onBoarding";
+import { account } from "@/lib/appwrite.config";
 import { Button } from "@/components/ui/button";
 
 export default function OnboardingPageContent() {
@@ -10,6 +11,26 @@ export default function OnboardingPageContent() {
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const sessions = await account.listSessions();
+        if (sessions.sessions.length === 0) {
+          console.log("No active session found. Redirecting to login.");
+          router.push("/login");
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+        router.push("/login");
+      }
+    };
+
+    checkSession();
+  }, [router]);
 
   const handleRoleSelection = async (role: "user" | "chamber") => {
     if (!userId) {
@@ -18,12 +39,20 @@ export default function OnboardingPageContent() {
     }
     try {
       await updateUserRole(userId, role);
-      router.push("/dashboard"); // Redirect to the dashboard or another page
+      if (role === "chamber") {
+        router.push(`/chamber-registration?userId=${userId}`); // Redirect to chamber registration page
+      } else {
+        router.push(`/user-registration?userId=${userId}`); // Redirect to user registration page
+      }
     } catch (error) {
       console.error("Error updating user role:", error);
       setError("Failed to update user role.");
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
