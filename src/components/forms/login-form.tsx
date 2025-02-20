@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "@/backend/auth/login";
+import { account } from "@/lib/appwrite.config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +14,22 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const sessions = await account.listSessions();
+        if (sessions.sessions.length > 0) {
+          console.log("Session already exists:", sessions.sessions[0]);
+          router.push("/"); // Redirect to the dashboard or another page
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+      }
+    };
+
+    checkSession();
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -20,7 +37,7 @@ export function LoginForm() {
       console.log("Logged in successfully:", session);
       // Store the user ID for later use
       localStorage.setItem("user_id", session.userId);
-      router.push("/signup"); // Redirect to the dashboard or another page
+      router.push("/"); // Redirect to the dashboard or another page
     } catch (error) {
       console.error("Login error:", error);
       setError("Invalid email or password");
