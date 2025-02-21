@@ -4,10 +4,9 @@ interface SignupData {
   email: string;
   password: string;
   phone: string;
-  role: "user" | "lawyer" | "chamber";
 }
 
-export const signup = async ({ email, password, phone, role }: SignupData) => {
+export const signup = async ({ email, password, phone }: SignupData) => {
   try {
     // Create user in Appwrite authentication system
     const user = await account.create('unique()', email, password);
@@ -21,7 +20,6 @@ export const signup = async ({ email, password, phone, role }: SignupData) => {
       {
         email,
         phone,
-        role,
       }
     );
 
