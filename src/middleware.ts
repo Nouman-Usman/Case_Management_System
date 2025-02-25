@@ -1,27 +1,29 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { redirect } from 'next/dist/server/api-utils'
 import { NextRequest, NextResponse } from 'next/server'
 
+// Define route matchers
+const isPublicRoute = createRouteMatcher(['/', '/sign-in', '/sign-up'])
 const isOnboardingRoute = createRouteMatcher(['/onboarding'])
-const isPublicRoute = createRouteMatcher(['/'])
-
-const isClientRoute = createRouteMatcher(['/client'])
-const isAdminRoute = createRouteMatcher(['/admin'])
+const isClientRoute = createRouteMatcher(['/client(.*)'])
+const isChmaberRoute = createRouteMatcher(['/chamber(.*)'])
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { userId, sessionClaims, redirectToSignIn } = await auth()
-  // const metadata: { onboardingComplete?: boolean; role?: string } = sessionClaims?.metadata || {};
+  const metadata: { onboardingComplete?: boolean; role?: string } = sessionClaims?.metadata || {};
   // For users visiting /onboarding, don't try to redirect
   if (userId && isOnboardingRoute(req)) {
     return NextResponse.next()
   }
-  // if (userId && isAdminRoute(req) && metadata?.role !== 'admin') {
-  //   // redirect to SignIn
-  //   return redirectToSignIn({ returnBackUrl: req.url })
-  // }
-  // if (userId && isClientRoute(req) && metadata?.role !== 'client') {
-  //   // redirect to SignIn
-  //   return redirectToSignIn({ returnBackUrl: req.url })
-  // }
+  if (userId && isChmaberRoute(req) && metadata?.role !== 'chamber') {
+    const onboardingUrl = new URL('/onboarding', req.url)
+    return NextResponse.redirect(onboardingUrl)
+  }
+  if (userId && isClientRoute(req) && metadata?.role !== 'client') {
+  const onboardingUrl = new URL('/onboarding', req.url)
+  return NextResponse.redirect(onboardingUrl)
+  }
+   
   // If the user isn't signed in and the route is private, redirect to sign-in
   if (!userId && !isPublicRoute(req)) return redirectToSignIn({ returnBackUrl: req.url })
   if (userId && !sessionClaims?.metadata?.onboardingComplete) {

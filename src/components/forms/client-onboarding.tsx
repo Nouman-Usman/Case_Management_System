@@ -15,7 +15,7 @@ interface ClientProfile {
   address: string;
   city: string;
   state: string;
-  zip: number; // Changed from string to number
+  zip: number; 
   country: string;
   profilePicUrl: string;
 }
@@ -31,7 +31,7 @@ export default function ClientOnboardingForm() {
     const username = await getData();
     try {
       if (selectedFile) {
-        const fileId = `${userId?.slice(0, 20)}_cl_profile`;
+        const fileId = `${userId?.slice(16, userId.length)}_cl_profile`;
         const fileRef = await storage.createFile(
           BUCKET_ID, 
           fileId, 
@@ -45,7 +45,7 @@ export default function ClientOnboardingForm() {
             ...data,
             zip: parseInt(data.zip.toString(), 10),
             profilePicUrl: publicUrl,
-            userId: userId?.slice(0, 20),
+            userId: userId?.slice(16, userId.length),
             Name: username
           };
 

@@ -3,15 +3,75 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
+import { storage, BUCKET_ID, databases, DATABASE_ID, ChamberProfileID } from '@/lib/appwrite.config';
+import { ID } from "appwrite";
+import getUserId from '@/utils/userId';
+import {completeOnboarding} from '@/app/onboarding/_actions';
+import { useRouter } from 'next/navigation'
+import getData from "@/utils/getUserData"
 
-interface ChamberOnboardingFormData extends Omit<ChamberProfile, 'casesHandled'> {}
+interface ChamberProfile {
+  ChamberName: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: number;
+  country: string;
+  profilePicUrl: string;
+}
 
 export default function ChamberOnboardingForm() {
+  const router = useRouter();
   const [chamberLogo, setChamberLogo] = useState<string>('');
-  const { register, handleSubmit, formState: { errors } } = useForm<ChamberOnboardingFormData>();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { register, handleSubmit, formState: { errors } } = useForm<ChamberProfile>();
 
-  const onSubmit = (data: ChamberOnboardingFormData) => {
-    console.log(data);
+  const onSubmit = async (data: ChamberProfile) => {
+    const userId = await getUserId();
+    const username = await getData();
+    try {
+      if (selectedFile) {
+        const fileId = `${userId?.slice(16, userId.length)}_ch_profile`;
+        const fileRef = await storage.createFile(
+          BUCKET_ID, 
+          fileId, 
+          selectedFile,
+        );
+
+        const publicUrl = `${process.env.NEXT_PUBLIC_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${fileRef.$id}/view?project=${process.env.NEXT_PUBLIC_PROJECT_ID}`;
+
+        try {
+          const formData = {
+            ...data,
+            zip: parseInt(data.zip.toString(), 10),
+            profilePicUrl: publicUrl,
+            userId: userId?.slice(16, userId.length),
+            userName: username
+          };
+
+          const resp = await databases.createDocument(
+            DATABASE_ID,
+            ChamberProfileID, // Make sure to create this collection in Appwrite
+            ID.unique(),
+            formData
+          );
+
+          if (resp.$id) {
+            const onboardingRes = await completeOnboarding('chamber');
+            if (onboardingRes?.message) {
+              console.log('Chamber registration completed successfully');
+              router.push('/chamber/dashboard');
+              return;
+            }
+          }
+        } catch (error) {
+          console.error('Error creating chamber document:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error uploading chamber logo:', error);
+    }
   };
 
   return (
@@ -23,20 +83,10 @@ export default function ChamberOnboardingForm() {
             <label htmlFor="name" className="block text-sm font-medium">Chamber Name</label>
             <input
               type="text" placeholder='Chamber Name'
-              {...register('name', { required: 'Chamber name is required' })}
+              {...register('ChamberName', { required: 'Chamber name is required' })}
               className="mt-1 block w-full rounded-md border p-2"
             />
           </div>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium">Email</label>
-            <input
-              type="email" placeholder='xyz@gmail.com'
-              {...register('email', { required: 'Email is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-        </div>
-
         <div>
           <label htmlFor="phone" className="block text-sm font-medium">Phone</label>
           <input
@@ -45,6 +95,8 @@ export default function ChamberOnboardingForm() {
             className="mt-1 block w-full rounded-md border p-2"
           />
         </div>
+        </div>
+
 
         {/* Chamber Location */}
         <div>
@@ -103,6 +155,7 @@ export default function ChamberOnboardingForm() {
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) {
+                setSelectedFile(file);
                 const reader = new FileReader();
                 reader.onloadend = () => {
                   setChamberLogo(reader.result as string);

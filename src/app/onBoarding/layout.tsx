@@ -8,8 +8,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   if (metadata.onboardingComplete === true && metadata.role === 'client') {
     redirect('/client/dashboard');
   }
-  else if (metadata.onboardingComplete === true && metadata.role === 'admin') {
-    redirect('/admin');
+  else if (metadata.onboardingComplete === true && metadata.role === 'chamber') {
+    redirect('/chamber/dashboard');
   }
   return <>{children}</>
 }
