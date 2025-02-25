@@ -82,7 +82,7 @@ declare interface AssistantProfile {
   country: string;
   casesAssisted: string[]; // Array of case IDs
   profilePic: string;
-  roles: string[]; // Array of roles
+  pern: string[]; // Array of roles
 }
 
 declare interface Subscription {
