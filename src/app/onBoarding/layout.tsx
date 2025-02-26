@@ -11,5 +11,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   else if (metadata.onboardingComplete === true && metadata.role === 'chamber') {
     redirect('/chamber/dashboard');
   }
+  else if (metadata.onboardingComplete === true && metadata.role === 'lawyer') {
+    redirect('/lawyer/dashboard');
+  }
+  else if (metadata.onboardingComplete === true && metadata.role === 'assistant') {
+    redirect('/assistant/dashboard');
+  }
+  else if (metadata.onboardingComplete === true && metadata.role === 'admin') {
+    redirect('/admin/dashboard');
+  }
   return <>{children}</>
 }
