@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-
+import { databases, DATABASE_ID, USER_COLLECTION_ID } from "@/lib/appwrite.config";
 
 export default function Home() {
   const router = useRouter();
