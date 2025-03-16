@@ -5,8 +5,9 @@ import { NextRequest, NextResponse } from 'next/server'
 // Define route matchers
 const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
-  '/sign-up(.*)'
+  '/sign-up(.*)',
 ])
+const isHomeRoute = createRouteMatcher(['/'])
 const isOnboardingRoute = createRouteMatcher(['/onboarding'])
 const isClientRoute = createRouteMatcher(['/client(.*)'])
 const isChmaberRoute = createRouteMatcher(['/chamber(.*)'])
@@ -43,7 +44,10 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.redirect(new URL('/onboarding', req.url))
   }
   // If the user isn't signed in and the route is private, redirect to sign-in
-  if (!userId && !isPublicRoute(req)) return redirectToSignIn({ returnBackUrl: req.url })
+  if (!userId && !isPublicRoute(req))
+  {
+    return redirectToSignIn({ returnBackUrl: req.url })
+  }
   if (userId && !sessionClaims?.metadata?.onboardingComplete) {
     const onboardingUrl = new URL('/onboarding', req.url)
     return NextResponse.redirect(onboardingUrl)

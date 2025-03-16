@@ -45,12 +45,6 @@ export default function Home() {
           >
             Get Started
           </Button>
-          <SignedOut>
-            <SignInButton 
-              fallbackRedirectUrl={"/"} 
-              forceRedirectUrl={`/onboarding`}
-            />
-          </SignedOut>
           <SignedIn>
             <UserButton />
           </SignedIn>
