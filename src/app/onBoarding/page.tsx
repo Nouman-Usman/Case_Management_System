@@ -9,7 +9,6 @@ import ClientOnboardingForm from '@/components/forms/client-onboarding'
 import { RoleSelection } from '@/components/forms/role-selection'
 
 export default function OnboardingComponent() {
-
   const { user } = useUser()
   const router = useRouter()
   const [selectedRole, setSelectedRole] = React.useState<string | null>(null)
