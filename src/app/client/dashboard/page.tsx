@@ -2,10 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-
+import  getUserId from "@/utils/userId";
 
 export default function Home() {
   const router = useRouter();
+  const userId = getUserId();
+  console.log("UserId is:", userId); 
   return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-8">
         <main className="flex flex-col gap-8 items-center">
