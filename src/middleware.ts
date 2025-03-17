@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
   '/sign-up(.*)',
+  '/'
 ])
 const isHomeRoute = createRouteMatcher(['/'])
 const isOnboardingRoute = createRouteMatcher(['/onboarding'])
