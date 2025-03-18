@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { updateUserRole } from "@/backend/auth/onBoarding";
+// import { updateUserRole } from "@/backend/auth/onBoarding";
 import { account } from "@/lib/appwrite.config";
 import { Button } from "@/components/ui/button";
 

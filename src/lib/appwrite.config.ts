@@ -1,5 +1,5 @@
-// import * as sdk from "node-appwrite";
-// const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+import * as sdk from "node-appwrite";
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 // const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID;
 // const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT;
 // const client = new sdk.Client();
@@ -42,9 +42,9 @@ export { DATABASE_ID, USER_COLLECTION_ID, BUCKET_ID, ClientProfile_ID, ChamberPr
 //   .setEndpoint(ENDPOINT)
 //   .setProject(PROJECT_ID);
 
-const account = new Account(client);
-const databases = new Databases(client);
-const users = new Users(client);
+// const account = new Account(client);
+// const databases = new Databases(client);
+// const users = new Users(client);
 
-export { client, account, databases, users, DATABASE_ID, USER_COLLECTION_ID, LAWYER_COLLECTION_ID};
+// export { client, account, databases, users, DATABASE_ID, USER_COLLECTION_ID, LAWYER_COLLECTION_ID};
 
