@@ -12,13 +12,11 @@ const compat = new FlatCompat({
 const eslintConfig = [
   // Retain Next.js and TypeScript recommended settings
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-
-  // Add this object to override or disable specific ESLint rules
   {
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
-      "@typescript-eslint/no-empty-interface": "off",
       "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/no-empty-object-type": "off"
     },
   },
 ];
