@@ -1,28 +1,28 @@
-declare interface CreateUserParams {
+export interface CreateUserParams {
   email: string;
   phone: string;
   password: string;
 }
 
-declare interface LoginUserParams {
+export declare interface LoginUserParams {
   email: string;
   password: string;
 }
 
-declare interface ResetPasswordParams {
+export declare interface ResetPasswordParams {
   email: string;
 }
 
-declare interface UpdateUserParams {
+export declare interface UpdateUserParams {
   email: string;
   phone: string;
 }
 
-declare interface DeleteUserParams {
+export declare interface DeleteUserParams {
   email: string;
 }
 
-declare interface LawyerProfile {
+export declare interface LawyerProfile {
   email: string;
   name: string;
   phone: string;
@@ -32,19 +32,19 @@ declare interface LawyerProfile {
   zip: string;
   country: string;
   practiceAreas: string[]; // Array of practice areas
-  experience: string;
-  education: string;
-  languages: string[];
+  experience: string; //not required
+  education: string;  //not required
+  languages: string[]; //not required
   consultationFees: number;
   rating: number;
-  reviews: string[];
-  casesHandled: number;
-  casesWon: number;
-  casesLost: number;
+  reviews: string[]; 
+  casesHandled: number; // not required
+  casesWon: number; // not required
+  casesLost: number; // not required
   profilePic: string;
 }
 
-declare interface ClientProfile {
+export declare interface ClientProfile {
   email: string;
   name: string;
   phone: string;
@@ -57,7 +57,7 @@ declare interface ClientProfile {
   profilePic: string;
 }
 
-declare interface ChamberProfile {
+export declare interface ChamberProfile {
   email: string;
   name: string;
   phone: string;
@@ -70,7 +70,7 @@ declare interface ChamberProfile {
   chamberLogo: string;
 }
 
-declare interface AssistantProfile {
+export declare interface AssistantProfile {
   userId: string;
   email: string;
   name: string;
@@ -85,7 +85,7 @@ declare interface AssistantProfile {
   pern: string[]; // Array of roles
 }
 
-declare interface Subscription {
+export declare interface Subscription {
   userId: string;
   subscriptionId: string;
   subscriptionType: string;
@@ -95,7 +95,7 @@ declare interface Subscription {
   subscriptionStatus: string;
 }
 
-declare interface Case {
+export declare interface Case {
   userId: string;
   caseId: string;
   caseType: string;
@@ -116,7 +116,7 @@ declare interface Case {
   review: string;
 }
 
-declare interface Document {
+export declare interface Document {
   userId: string;
   documentId: string;
   documentName: string;
@@ -126,7 +126,7 @@ declare interface Document {
   caseId: string;
 }
 
-declare interface Reminder {
+export declare interface Reminder {
   userId: string;
   reminderId: string;
   reminderTitle: string;
@@ -135,17 +135,7 @@ declare interface Reminder {
   reminderTime: string;
   reminderStatus: string;
 }
-declare interface LegalDocument {
-  documentId: string;
-  userId: string; // User who uploaded the document
-  caseId: string; // Associated case
-  documentName: string;
-  documentType: string; // e.g., "Contract", "Affidavit", "Evidence"
-  documentUrl: string;
-  uploadDate: string;
-  uploadedBy: string; // User who uploaded the document (lawyer, assistant, or client)
-}
-declare interface Feedback {
+export declare interface Feedback {
   feedbackId: string;
   userId: string; // User who provided the feedback (client or lawyer)
   caseId: string; // Associated case (if applicable)
@@ -154,7 +144,7 @@ declare interface Feedback {
   feedbackDate: string;
 }
 
-declare interface Appointment {
+export declare interface Appointment {
   appointmentId: string;
   userId: string; // User who booked the appointment (client or lawyer)
   lawyerId: string; // Lawyer associated with the appointment
@@ -166,7 +156,7 @@ declare interface Appointment {
   notes: string;
 }
 
-declare interface Announcements{
+export declare interface Announcements{
   announcementId: string;
   announcementTitle: string;
   announcementDescription: string;
@@ -176,7 +166,7 @@ declare interface Announcements{
   announcementMedia: string;
 }
 
-declare interface DraftedDocuments{
+export declare interface DraftedDocuments{
   userId: string;
   clientId: string;
   caseId: string;
@@ -186,4 +176,6 @@ declare interface DraftedDocuments{
   documentUrl: string;
   documentDate: string;
 }
+
+
 
