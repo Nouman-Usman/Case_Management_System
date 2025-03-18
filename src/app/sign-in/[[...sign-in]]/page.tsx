@@ -122,9 +122,10 @@ export default function SignInPage() {
                       </SignIn.Action>
 
                       <Button variant="link" size="sm" asChild>
-                        <Clerk.Link navigate="sign-up">
+                        <Link href="/sign-up">Don&apos;t have an account? Sign up </Link>
+                        {/* <Clerk.Link navigate="sign-up">
                           Don&apos;t have an account? Sign up
-                        </Clerk.Link>
+                        </Clerk.Link> */}
                       </Button>
                     </div>
                   </CardFooter>

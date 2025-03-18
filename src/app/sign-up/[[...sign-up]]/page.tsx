@@ -20,6 +20,7 @@ import * as SignUp from '@clerk/elements/sign-up'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
+
   Card,
   CardContent,
   CardDescription,
@@ -132,7 +133,8 @@ export default function SignUpPage() {
                         </Button>
                       </SignUp.Action>
                       <Button variant="link" size="sm" asChild>
-                        <Clerk.Link navigate="sign-in">Already have an account? Sign in</Clerk.Link>
+                        <Link href="/sign-in">Already have an account? Sign in</Link>
+                        {/* <Clerk.Link navigate="sign-in">Already have an account? Sign in</Clerk.Link> */}
                       </Button>
                     </div>
                   </CardFooter>
