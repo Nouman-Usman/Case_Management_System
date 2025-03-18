@@ -1,7 +1,12 @@
-"use client";
+'use client'
 
-import { Suspense } from "react";
-import OnboardingPageContent from "@/components/forms/Authentication/onboarding-page-content";
+import * as React from 'react'
+import { useUser } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
+import { completeOnboarding } from './_actions'
+import ChamberOnboardingForm from '@/components/forms/chamber-onboarding'
+import ClientOnboardingForm from '@/components/forms/client-onboarding'
+import { RoleSelection } from '@/components/forms/role-selection'
 
 export default function OnboardingComponent() {
   const { user } = useUser()
@@ -20,8 +25,20 @@ export default function OnboardingComponent() {
   }
   
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <OnboardingPageContent />
-    </Suspense>
-  );
+    <div className="container mx-auto py-8">
+      {!selectedRole ? (
+        <RoleSelection onRoleSelect={setSelectedRole} />
+      ) : (
+        <div>
+          <button 
+            onClick={() => setSelectedRole(null)}
+            className="mb-4 text-blue-500 hover:text-blue-700 px-4"
+          >
+            ← Back to role selection
+          </button>
+          {renderForm()}
+        </div>
+      )}
+    </div>
+  )
 }

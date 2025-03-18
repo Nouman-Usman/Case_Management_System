@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 import React from 'react'
-=======
->>>>>>> 600d6baf3d8304b14a43946ee639bf996d8d045d
 import { auth, currentUser } from '@clerk/nextjs/server'
 
 export default async function AdminDashboard() {
