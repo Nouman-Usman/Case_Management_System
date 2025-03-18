@@ -5,6 +5,7 @@ const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT;
 const DATABASE_ID = process.env.NEXT_PUBLIC_DATABASE_ID!;
 const USER_COLLECTION_ID = process.env.NEXT_PUBLIC_USER_COLLECTION_ID!;
 const BUCKET_ID = process.env.NEXT_PUBLIC_BUCKET_ID!;
+
 const client = new sdk.Client();
 client.setEndpoint(ENDPOINT!).setProject(PROJECT_ID!).setKey(API_KEY!);
 export const databases = new sdk.Databases(client);
