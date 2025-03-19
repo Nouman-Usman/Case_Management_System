@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FaUserTie, FaUserFriends, FaBullhorn, FaRobot, FaGavel, FaHome } from 'react-icons/fa'
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import AddLawyerForm from '@/components/forms/lawyer/add-lawyer'
@@ -8,6 +8,7 @@ import AddAssistantForm from '@/components/forms/assistant/add-assistant'
 import { LawyersDataTable } from '@/components/tables/lawyers-table'
 import { AssistantsDataTable } from '@/components/tables/assistants-table'
 import { CasesDataTable } from '@/components/tables/cases-table'
+import { lawyersCountAssociatedChamber,assistantCountAssociatedChamber,totalActiveCases } from '@/lib/actions/lawyer.actions'
 
 interface DashboardContentProps {
   userId?: string
@@ -21,6 +22,44 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
   const [showAssistantsTable, setShowAssistantsTable] = useState(false)
   const [showCasesTable, setShowCasesTable] = useState(false)
   const [activeView, setActiveView] = useState<'home' | 'lawyers' | 'assistants' | 'announcements' | 'chatbot' | 'cases'>('home')
+  const [lawyerCount, setLawyerCount] = useState(0);
+  const [assistantCount, setAssistantCount] = useState(0);
+  const [casesCount, setCasesCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      if (!userId) {
+        console.log("No userId provided, skipping fetch");
+        return;
+      }
+
+      try {
+        // Fetch all counts concurrently
+        const [lawyers, assistants, cases] = await Promise.all([
+          lawyersCountAssociatedChamber().catch((err) => {
+            console.error("Failed to fetch lawyer count:", err);
+            return 0; // Fallback value
+          }),
+          assistantCountAssociatedChamber().catch((err) => {
+            console.error("Failed to fetch assistant count:", err);
+            return 0; // Fallback value
+          }),
+          totalActiveCases().catch((err) => {
+            console.error("Failed to fetch cases count:", err);
+            return 0; // Fallback value
+          }),
+        ]);
+
+        setLawyerCount(lawyers);
+        setAssistantCount(assistants);
+        setCasesCount(cases);
+      } catch (error) {
+        console.error("Unexpected error fetching counts:", error);
+      }
+    };
+
+    fetchCounts();
+  }, [userId]);
 
   const resetView = () => {
     setShowLawyersTable(false)
@@ -125,15 +164,15 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
           <div className="grid grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800">Total Lawyers</h3>
-              <p className="text-3xl font-bold text-indigo-600">0</p>
+              <p className="text-3xl font-bold text-indigo-600">{lawyerCount}</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800">Total Assistants</h3>
-              <p className="text-3xl font-bold text-indigo-600">0</p>
+              <p className="text-3xl font-bold text-indigo-600">{assistantCount}</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800">Active Cases</h3>
-              <p className="text-3xl font-bold text-indigo-600">0</p>
+              <p className="text-3xl font-bold text-indigo-600">{casesCount}</p>
             </div>
           </div>
         )}
