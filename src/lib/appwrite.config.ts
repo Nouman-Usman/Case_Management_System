@@ -29,8 +29,12 @@ export const account = new sdk.Account(client);
 export const functions = new sdk.Functions(client);
 const ClientProfile_ID = process.env.NEXT_PUBLIC_CLIENT_PROFILE_COLLECTION_ID!;
 const LawyerProfile_ID = process.env.NEXT_PUBLIC_LAWYERPROFILE_ID!;
+const CASE_ID = process.env.NEXT_PUBLIC_CASE_ID!;
+const ASSISTANTPROFILE_ID = process.env.NEXT_PUBLIC_ASSISTANTPROFILE_ID!;
 const ChamberProfileID = process.env.NEXT_PUBLIC_CHAMBER_PROFILE_COLLECTION_ID!;
-export { DATABASE_ID, USER_COLLECTION_ID, BUCKET_ID, ClientProfile_ID, ChamberProfileID, LawyerProfile_ID };
+export { DATABASE_ID, USER_COLLECTION_ID, BUCKET_ID, ClientProfile_ID, ChamberProfileID, LawyerProfile_ID,
+ASSISTANTPROFILE_ID,CASE_ID
+ };
 
 
 // import { Client, Databases, Account, Users } from "node-appwrite";
