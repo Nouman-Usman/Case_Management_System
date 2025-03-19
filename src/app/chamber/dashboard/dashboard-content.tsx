@@ -7,6 +7,7 @@ import AddLawyerForm from '@/components/forms/lawyer/add-lawyer'
 import AddAssistantForm from '@/components/forms/assistant/add-assistant'
 import { LawyersDataTable } from '@/components/tables/lawyers-table'
 import { AssistantsDataTable } from '@/components/tables/assistants-table'
+import { CasesDataTable } from '@/components/tables/cases-table'
 
 interface DashboardContentProps {
   userId?: string
@@ -18,17 +19,20 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
   const [isAddAssistantOpen, setIsAddAssistantOpen] = useState(false)
   const [showLawyersTable, setShowLawyersTable] = useState(false)
   const [showAssistantsTable, setShowAssistantsTable] = useState(false)
+  const [showCasesTable, setShowCasesTable] = useState(false)
   const [activeView, setActiveView] = useState<'home' | 'lawyers' | 'assistants' | 'announcements' | 'chatbot' | 'cases'>('home')
 
   const resetView = () => {
     setShowLawyersTable(false)
     setShowAssistantsTable(false)
+    setShowCasesTable(false)
     setActiveView('home')
   }
 
-  const handleNavigation = (view: 'lawyers' | 'assistants' | null) => {
+  const handleNavigation = (view: 'lawyers' | 'assistants' | 'cases' | null) => {
     setShowLawyersTable(view === 'lawyers')
     setShowAssistantsTable(view === 'assistants')
+    setShowCasesTable(view === 'cases')
     if (view) setActiveView(view)
   }
 
@@ -80,7 +84,7 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
               { icon: FaUserFriends, label: 'Manage Assistants', view: 'assistants' as const, onClick: () => handleNavigation('assistants') },
               { icon: FaBullhorn, label: 'Announcements', view: 'announcements' as const, onClick: () => setActiveView('announcements') },
               { icon: FaRobot, label: 'AI Chatbot', view: 'chatbot' as const, onClick: () => setActiveView('chatbot') },
-              { icon: FaGavel, label: 'Manage Cases', view: 'cases' as const, onClick: () => setActiveView('cases') },
+              { icon: FaGavel, label: 'Manage Cases', view: 'cases' as const, onClick: () => handleNavigation('cases') },
             ].map((item, index) => (
               <button
                 key={index}
@@ -101,15 +105,22 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
       <div className="flex-1 p-8">
         <header className="bg-white shadow-sm rounded-lg p-4 mb-6">
           <h1 className="text-2xl font-semibold text-gray-800">
-            {showLawyersTable ? 'Manage Lawyers' : showAssistantsTable ? 'Manage Assistants' : `Welcome, ${userName}`}
+            {showLawyersTable ? 'Manage Lawyers' 
+              : showAssistantsTable ? 'Manage Assistants' 
+              : showCasesTable ? 'Manage Cases'
+              : `Welcome, ${userName}`}
           </h1>
-          {!showLawyersTable && !showAssistantsTable && <p className="text-gray-600">Chamber ID: {userId}</p>}
+          {!showLawyersTable && !showAssistantsTable && !showCasesTable && (
+            <p className="text-gray-600">Chamber ID: {userId}</p>
+          )}
         </header>
         
         {showLawyersTable ? (
           <LawyersDataTable />
         ) : showAssistantsTable ? (
           <AssistantsDataTable />
+        ) : showCasesTable ? (
+          <CasesDataTable />
         ) : (
           <div className="grid grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-sm">

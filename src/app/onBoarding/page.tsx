@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { completeOnboarding } from './_actions'
 import ChamberOnboardingForm from '@/components/forms/chamber-onboarding'
+import FileUploadForm from '@/components/forms/fileuploading'
 import ClientOnboardingForm from '@/components/forms/client-onboarding'
 import { RoleSelection } from '@/components/forms/role-selection'
 
@@ -19,6 +20,7 @@ export default function OnboardingComponent() {
         return <ClientOnboardingForm />
       case 'chamber':
         return <ChamberOnboardingForm />
+        // return <FileUploadForm />
       default:
         return null
     }
