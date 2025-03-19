@@ -33,12 +33,18 @@ export default function ChamberOnboardingForm() {
     try {
       if (selectedFile) {
         const fileId = `${userId?.slice(16, userId.length)}_ch_profile`;
+        const fileUrl = URL.createObjectURL(selectedFile);
+        if (!fileUrl) {
+          throw new Error("Failed to generate a valid URL for the logo file.");
+        }
+
+        console.log("File URL: ", fileUrl);
+
         const fileRef = await storage.createFile(
           BUCKET_ID, 
           fileId, 
           selectedFile,
         );
-
         const publicUrl = `${process.env.NEXT_PUBLIC_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${fileRef.$id}/view?project=${process.env.NEXT_PUBLIC_PROJECT_ID}`;
 
         try {
