@@ -5,9 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { storage, BUCKET_ID, id} from '@/lib/appwrite.config';
-import { ID } from "appwrite";
-
+import { storage, BUCKET_ID, ID } from '@/lib/appwrite.config';
 
 export default function FileUploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -49,16 +47,29 @@ export default function FileUploadForm() {
 
   const handleUpload = async () => {
     if (!file) return;
-    const Id = id.unique();
-    const fileId = `${Id}`;
-    const fileRef = await storage.createFile(
-          BUCKET_ID,
-          fileId,
-          file,
-        );
-        console.log("File Ref: ", file
-        );
     
+    try {
+      const fileId = ID.unique();
+      
+      const fileRef = await storage.createFile(
+        BUCKET_ID,
+        fileId,
+        file
+      );
+
+      // Get the file URL after successful upload
+      const fileUrl = storage.getFileView(BUCKET_ID, fileId);
+      console.log("File uploaded successfully. URL:", fileUrl);
+      
+      // Reset the file input
+      setFile(null);
+      if (document.getElementById('file') as HTMLInputElement) {
+        (document.getElementById('file') as HTMLInputElement).value = '';
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      // Show error to user
+    }
   };
 
   return (

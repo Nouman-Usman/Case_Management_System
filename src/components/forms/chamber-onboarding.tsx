@@ -3,8 +3,14 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
-import { storage, BUCKET_ID, databases, DATABASE_ID, ChamberProfileID } from '@/lib/appwrite.config';
-import { ID } from "appwrite";
+import { 
+storage,
+BUCKET_ID,
+databases,
+DATABASE_ID,
+ChamberProfileID 
+} from '@/lib/appwrite.config';
+import { ID } from "appwrite";;
 import getUserId from '@/utils/userId';
 import {completeOnboarding} from '@/app/onboarding/_actions';
 import { useRouter } from 'next/navigation'
@@ -26,55 +32,67 @@ export default function ChamberOnboardingForm() {
   const [chamberLogo, setChamberLogo] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { register, handleSubmit, formState: { errors } } = useForm<ChamberProfile>();
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setUploadError(null);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setChamberLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const onSubmit = async (data: ChamberProfile) => {
     const userId = await getUserId();
     const username = await getData();
+    setIsUploading(true);
+    setUploadError(null);
+
     try {
       if (selectedFile) {
-        console.log('Uploading chamber logo with the selected file:', selectedFile);
-        const fileId = `${userId?.slice(16, userId.length)}_ch_profile`;
-        
+        // Upload file using improved method
         const fileRef = await storage.createFile(
           BUCKET_ID,
-          fileId,
-          selectedFile,
+          ID.unique(),
+          selectedFile
         );
-        console.log("File Ref: ", fileRef);
-        
-        // Construct the correct URL using the fileId
-        const publicUrl = `${process.env.NEXT_PUBLIC_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_PROJECT_ID}`;
 
-        try {
-          const formData = {
-            ...data,
-            zip: parseInt(data.zip.toString(), 10),
-            profilePicUrl: publicUrl,
-            userId: userId?.slice(16, userId.length),
-            userName: username
-          };
+        // Get the file URL using the storage.getFileView method
+        const fileUrl = storage.getFileView(BUCKET_ID, fileRef.$id);
 
-          const resp = await databases.createDocument(
-            DATABASE_ID,
-            ChamberProfileID, // Make sure to create this collection in Appwrite
-            ID.unique(),
-            formData
-          );
+        const formData = {
+          ...data,
+          zip: parseInt(data.zip.toString(), 10),
+          profilePicUrl: fileUrl,
+          userId: userId,
+          userName: username
+        };
 
-          if (resp.$id) {
-            const onboardingRes = await completeOnboarding('chamber');
-            if (onboardingRes?.message) {
-              console.log('Chamber registration completed successfully');
-              router.push('/chamber/dashboard');
-              return;
-            }
+        const resp = await databases.createDocument(
+          DATABASE_ID,
+          ChamberProfileID,
+          ID.unique(),
+          formData
+        );
+
+        if (resp.$id) {
+          const onboardingRes = await completeOnboarding('chamber');
+          if (onboardingRes?.message) {
+            router.push('/chamber/dashboard');
           }
-        } catch (error) {
-          console.error('Error creating chamber document:', error);
         }
       }
-    } catch (error: any) {
-      console.error('Error uploading chamber logo:', error as Error);
+    } catch (error) {
+      console.error('Error:', error);
+      setUploadError(error instanceof Error ? error.message : 'Failed to upload file');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -156,19 +174,13 @@ export default function ChamberOnboardingForm() {
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                setSelectedFile(file);
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setChamberLogo(reader.result as string);
-                };
-                reader.readAsDataURL(file);
-              }
-            }}
+            onChange={handleFileChange}
             className="mt-1 block w-full"
+            disabled={isUploading}
           />
+          {uploadError && (
+            <p className="text-red-500 text-sm mt-1">{uploadError}</p>
+          )}
           {chamberLogo && (
             <div className="mt-2">
               <Image
@@ -185,10 +197,11 @@ export default function ChamberOnboardingForm() {
 
       <button
         type="submit"
-        className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
+        disabled={isUploading}
+        className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors disabled:bg-blue-300"
       >
-        Register Chamber
+        {isUploading ? 'Uploading...' : 'Register Chamber'}
       </button>
     </form>
   );
-}   
+}

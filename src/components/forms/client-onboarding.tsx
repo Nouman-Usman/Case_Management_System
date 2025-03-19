@@ -1,10 +1,9 @@
 "use client";
 
-import { storage, BUCKET_ID, databases, DATABASE_ID, ClientProfile_ID } from '@/lib/appwrite.config';
+import { storage, BUCKET_ID, databases, DATABASE_ID, ClientProfile_ID, ID } from '@/lib/appwrite.config';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
-import { ID } from "appwrite";
 import getUserId from '@/utils/userId';
 import {completeOnboarding} from '@/app/onboarding/_actions';
 import { useRouter } from 'next/navigation'
@@ -24,52 +23,68 @@ export default function ClientOnboardingForm() {
   const router = useRouter();
   const [profileImage, setProfileImage] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<ClientProfile>();
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const { register, handleSubmit, formState: { errors } } = useForm<ClientProfile>();
   
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setUploadError(null);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const onSubmit = async (data: ClientProfile) => {
     const userId = await getUserId();
     const username = await getData();
+    setIsUploading(true);
+    setUploadError(null);
+
     try {
       if (selectedFile) {
-        const fileId = `${userId?.slice(16, userId.length)}_cl_profile`;
+        // Upload file using improved method
         const fileRef = await storage.createFile(
-          BUCKET_ID, 
-          fileId, 
-          selectedFile,
+          BUCKET_ID,
+          ID.unique(),
+          selectedFile
         );
 
-        const publicUrl = `${process.env.NEXT_PUBLIC_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${fileRef.$id}/view?project=${process.env.NEXT_PUBLIC_PROJECT_ID}`;
+        // Get the file URL using the storage.getFileView method
+        const fileUrl = storage.getFileView(BUCKET_ID, fileRef.$id);
 
-        try {
-          const formData = {
-            ...data,
-            zip: parseInt(data.zip.toString(), 10),
-            profilePicUrl: publicUrl,
-            userId: userId?.slice(16, userId.length),
-            Name: username
-          };
+        const formData = {
+          ...data,
+          zip: parseInt(data.zip.toString(), 10),
+          profilePicUrl: fileUrl,
+          userId: userId,
+          Name: username
+        };
 
-          const resp = await databases.createDocument(
-            DATABASE_ID,
-            ClientProfile_ID,
-            ID.unique(),
-            formData
-          );
+        const resp = await databases.createDocument(
+          DATABASE_ID,
+          ClientProfile_ID,
+          ID.unique(),
+          formData
+        );
 
-          if (resp.$id) {
-            const onboardingRes = await completeOnboarding('client');
-            if (onboardingRes?.message) {
-              console.log('Onboarding completed successfully');
-              router.push('/cl-dashboard');
-              return;
-            }
+        if (resp.$id) {
+          const onboardingRes = await completeOnboarding('client');
+          if (onboardingRes?.message) {
+            router.push('/cl-dashboard');
           }
-        } catch (error) {
-          console.error('Error creating document:', error);
         }
       }
     } catch (error) {
-      console.error('Error uploading file:', error);
+      console.error('Error:', error);
+      setUploadError(error instanceof Error ? error.message : 'Failed to upload file');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -150,19 +165,13 @@ export default function ClientOnboardingForm() {
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                setSelectedFile(file);
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setProfileImage(reader.result as string);
-                };
-                reader.readAsDataURL(file);
-              }
-            }}
+            onChange={handleFileChange}
             className="mt-1 block w-full"
+            disabled={isUploading}
           />
+          {uploadError && (
+            <p className="text-red-500 text-sm mt-1">{uploadError}</p>
+          )}
           {profileImage && (
             <div className="mt-2">
               <Image
@@ -179,9 +188,10 @@ export default function ClientOnboardingForm() {
 
       <button
         type="submit"
-        className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
+        disabled={isUploading}
+        className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors disabled:bg-blue-300"
       >
-        Submit
+        {isUploading ? 'Uploading...' : 'Submit'}
       </button>
     </form>
   );
