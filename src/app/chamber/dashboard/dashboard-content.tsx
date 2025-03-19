@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FaUserTie, FaUserFriends, FaBullhorn, FaRobot, FaGavel, FaHome } from 'react-icons/fa'
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import AddLawyerForm from '@/components/forms/lawyer/add-lawyer'
 import AddAssistantForm from '@/components/forms/assistant/add-assistant'
 import { LawyersDataTable } from '@/components/tables/lawyers-table'
 import { AssistantsDataTable } from '@/components/tables/assistants-table'
+import { lawyersCountAssociatedChamber } from '@/lib/actions/lawyer.actions'
 
 interface DashboardContentProps {
   userId?: string
@@ -19,6 +20,17 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
   const [showLawyersTable, setShowLawyersTable] = useState(false)
   const [showAssistantsTable, setShowAssistantsTable] = useState(false)
   const [activeView, setActiveView] = useState<'home' | 'lawyers' | 'assistants' | 'announcements' | 'chatbot' | 'cases'>('home')
+  const [lawyerCount, setLawyerCount] = useState(0)
+
+  useEffect(() => {
+    const fetchLawyerCount = async () => {
+      if (userId) {
+        const result = await lawyersCountAssociatedChamber()
+        setLawyerCount(result || 0)
+      }
+    }
+    fetchLawyerCount()
+  })
 
   const resetView = () => {
     setShowLawyersTable(false)
@@ -114,7 +126,7 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
           <div className="grid grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800">Total Lawyers</h3>
-              <p className="text-3xl font-bold text-indigo-600">0</p>
+              <p className="text-3xl font-bold text-indigo-600">{lawyerCount}</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800">Total Assistants</h3>
