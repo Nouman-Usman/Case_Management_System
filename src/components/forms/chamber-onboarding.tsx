@@ -33,6 +33,10 @@ export default function ChamberOnboardingForm() {
     try {
       if (selectedFile) {
         const fileId = `${userId?.slice(16, userId.length)}_ch_profile`;
+        // const fileUrl = URL.createObjectURL(selectedFile);
+        // if (!fileUrl) {
+        //   throw new Error("Failed to generate a valid URL for the logo file.");
+        // }
         const fileRef = await storage.createFile(
           BUCKET_ID, 
           fileId, 
@@ -187,4 +191,4 @@ export default function ChamberOnboardingForm() {
       </button>
     </form>
   );
-}
+}   
