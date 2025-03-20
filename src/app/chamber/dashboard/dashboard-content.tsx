@@ -1,7 +1,11 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { FaUserTie, FaUserFriends, FaBullhorn, FaRobot, FaGavel, FaHome } from 'react-icons/fa'
+import { 
+  FaUserTie, FaUserFriends, FaBullhorn, FaRobot, FaGavel, FaHome,
+  FaFileAlt, FaCalendarAlt, FaMoneyBillWave, FaChartBar,
+  FaCog, FaBell, FaUsers, FaClipboardList
+} from 'react-icons/fa'
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import AddLawyerForm from '@/components/forms/lawyer/add-lawyer'
 import AddAssistantForm from '@/components/forms/assistant/add-assistant'
@@ -21,7 +25,7 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
   const [showLawyersTable, setShowLawyersTable] = useState(false)
   const [showAssistantsTable, setShowAssistantsTable] = useState(false)
   const [showCasesTable, setShowCasesTable] = useState(false)
-  const [activeView, setActiveView] = useState<'home' | 'lawyers' | 'assistants' | 'announcements' | 'chatbot' | 'cases'>('home')
+  const [activeView, setActiveView] = useState<'home' | 'lawyers' | 'assistants' | 'announcements' | 'chatbot' | 'cases' | 'reports' | 'calendar' | 'documents'>('home')
   const [lawyerCount, setLawyerCount] = useState(0);
   const [assistantCount, setAssistantCount] = useState(0);
   const [casesCount, setCasesCount] = useState(0);
@@ -78,12 +82,12 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg">
+      <div className="w-64 bg-white shadow-lg flex flex-col">
         <div className="p-6 bg-indigo-600">
           <h2 className="text-2xl font-bold text-white">Chamber Dashboard</h2>
         </div>
-        <nav className="mt-6">
-          <div className="px-4 space-y-3">
+        <nav className="flex-1 overflow-y-auto">
+          <div className="px-4 space-y-3 py-6">
             <button 
               onClick={resetView}
               className={`flex w-full items-center p-3 text-gray-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200 ${
@@ -91,51 +95,89 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
               }`}
             >
               <FaHome className="w-5 h-5 mr-3 text-indigo-600" />
-              <span className="text-sm font-medium">Home</span>
+              <span className="text-sm font-medium">Dashboard Home</span>
             </button>
 
-            <Dialog open={isAddLawyerOpen} onOpenChange={setIsAddLawyerOpen}>
-              <DialogTrigger asChild>
-                <button className="flex w-full items-center p-3 text-gray-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200">
-                  <FaUserTie className="w-5 h-5 mr-3 text-indigo-600" />
-                  <span className="text-sm font-medium">Add Lawyers</span>
-                </button>
-              </DialogTrigger>
-              <DialogContent>
-                <AddLawyerForm />
-              </DialogContent>
-            </Dialog>
+            {/* Staff Management Section */}
+            <div className="pt-4">
+              <p className="px-4 text-xs font-semibold text-gray-400 uppercase">Staff Management</p>
+              <div className="mt-3 space-y-2">
+                <Dialog open={isAddLawyerOpen} onOpenChange={setIsAddLawyerOpen}>
+                  <DialogTrigger asChild>
+                    <button className="flex w-full items-center p-3 text-gray-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200">
+                      <FaUserTie className="w-5 h-5 mr-3 text-indigo-600" />
+                      <span className="text-sm font-medium">Add Lawyers</span>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <AddLawyerForm />
+                  </DialogContent>
+                </Dialog>
 
-            <Dialog open={isAddAssistantOpen} onOpenChange={setIsAddAssistantOpen}>
-              <DialogTrigger asChild>
-                <button className="flex w-full items-center p-3 text-gray-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200">
-                  <FaUserFriends className="w-5 h-5 mr-3 text-indigo-600" />
-                  <span className="text-sm font-medium">Add Assistants</span>
-                </button>
-              </DialogTrigger>
-              <DialogContent>
-                <AddAssistantForm />
-              </DialogContent>
-            </Dialog>
+                <Dialog open={isAddAssistantOpen} onOpenChange={setIsAddAssistantOpen}>
+                  <DialogTrigger asChild>
+                    <button className="flex w-full items-center p-3 text-gray-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200">
+                      <FaUserFriends className="w-5 h-5 mr-3 text-indigo-600" />
+                      <span className="text-sm font-medium">Add Assistants</span>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <AddAssistantForm />
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
 
-            {[
-              { icon: FaUserTie, label: 'Manage Lawyers', view: 'lawyers' as const, onClick: () => handleNavigation('lawyers') },
-              { icon: FaUserFriends, label: 'Manage Assistants', view: 'assistants' as const, onClick: () => handleNavigation('assistants') },
-              { icon: FaBullhorn, label: 'Announcements', view: 'announcements' as const, onClick: () => setActiveView('announcements') },
-              { icon: FaRobot, label: 'AI Chatbot', view: 'chatbot' as const, onClick: () => setActiveView('chatbot') },
-              { icon: FaGavel, label: 'Manage Cases', view: 'cases' as const, onClick: () => handleNavigation('cases') },
-            ].map((item, index) => (
-              <button
-                key={index}
-                onClick={item.onClick}
-                className={`flex w-full items-center p-3 text-gray-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200 ${
-                  activeView === item.view ? 'bg-indigo-100 ring-2 ring-indigo-600' : ''
-                }`}
-              >
-                <item.icon className="w-5 h-5 mr-3 text-indigo-600" />
-                <span className="text-sm font-medium">{item.label}</span>
-              </button>
-            ))}
+            {/* Cases & Operations */}
+            <div className="pt-4">
+              <p className="px-4 text-xs font-semibold text-gray-400 uppercase">Cases & Operations</p>
+              <div className="mt-3 space-y-2">
+                {[
+                  { icon: FaGavel, label: 'Manage Cases', view: 'cases', onClick: () => handleNavigation('cases') },
+                  { icon: FaCalendarAlt, label: 'Court Calendar', view: 'calendar', onClick: () => setActiveView('calendar') },
+                  { icon: FaFileAlt, label: 'Documents', view: 'documents', onClick: () => setActiveView('documents') },
+                  { icon: FaClipboardList, label: 'Case Reports', view: 'reports', onClick: () => setActiveView('reports') },
+                ].map((item, index) => (
+                  <button
+                    key={index}
+                    onClick={item.onClick}
+                    className={`flex w-full items-center p-3 text-gray-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200 ${
+                      activeView === item.view ? 'bg-indigo-100 ring-2 ring-indigo-600' : ''
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5 mr-3 text-indigo-600" />
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Administration */}
+            <div className="pt-4">
+              <p className="px-4 text-xs font-semibold text-gray-400 uppercase">Administration</p>
+              <div className="mt-3 space-y-2">
+                {[
+                  { icon: FaUsers, label: 'Team Management', view: 'team' },
+                  { icon: FaMoneyBillWave, label: 'Billing', view: 'billing' },
+                  { icon: FaChartBar, label: 'Analytics', view: 'analytics' },
+                  { icon: FaBell, label: 'Notifications', view: 'notifications' },
+                  { icon: FaBullhorn, label: 'Announcements', view: 'announcements' },
+                  { icon: FaRobot, label: 'AI Assistant', view: 'chatbot' },
+                  { icon: FaCog, label: 'Settings', view: 'settings' },
+                ].map((item, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveView(item.view as any)}
+                    className={`flex w-full items-center p-3 text-gray-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200 ${
+                      activeView === item.view ? 'bg-indigo-100 ring-2 ring-indigo-600' : ''
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5 mr-3 text-indigo-600" />
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </nav>
       </div>
