@@ -3,16 +3,17 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
-import { 
-storage,
-BUCKET_ID,
-databases,
-DATABASE_ID,
-ClientProfile_ID,
+import {
+  storage,
+  BUCKET_ID,
+  databases,
+  DATABASE_ID,
+  ClientProfile_ID,
+  ID
 } from '@/lib/appwrite.config';
-import { ID } from "appwrite";;
+// import { ID } from "appwrite";
 import getUserId from '@/utils/userId';
-import {completeOnboarding} from '@/app/onboarding/_actions';
+import { completeOnboarding } from '@/app/onboarding/_actions';
 import { useRouter } from 'next/navigation'
 import getData from "@/utils/getUserData"
 
@@ -21,7 +22,7 @@ interface ClientProfile {
   address: string;
   city: string;
   state: string;
-  zip: number; 
+  zip: number;
   country: string;
   profilePicUrl: string;
 }
@@ -33,7 +34,7 @@ export default function ClientOnboardingForm() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const { register, handleSubmit, formState: { errors } } = useForm<ClientProfile>();
-  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -62,7 +63,7 @@ export default function ClientOnboardingForm() {
           selectedFile
         );
         const fileUrl = storage.getFileView(BUCKET_ID, fileRef.$id);
-        console.log("File Url: ", fileUrl)
+        // const fileUrl = "resting"
         const formData = {
           ...data,
           zip: parseInt(data.zip.toString(), 10),
@@ -70,19 +71,32 @@ export default function ClientOnboardingForm() {
           userId: userId,
           Name: username
         };
+        console.log(" Form Data is: ", formData)
 
         try {
           const resp = await databases.createDocument(
             DATABASE_ID,
             ClientProfile_ID,
             ID.unique(),
-            formData
+            formData,
           );
-
+          // resp.then(function (response: any) {
+          //   console.log(response);
+          // }, function (error: any) {
+          //   console.log(error);
+          // });
+          // console.log("Response is: ", resp)
           if (resp.$id) {
             const onboardingRes = await completeOnboarding('client');
             if (onboardingRes?.message) {
-              router.push('/cl-dashboard');
+              try {
+                await router.push('/client/dashboard');
+                router.refresh(); // Force router to refresh
+              } catch (navError) {
+                console.error('Navigation error:', navError);
+                // Fallback navigation
+                window.location.href = '/client/dashboard';
+              }
             }
           }
         } catch (dbError) {
@@ -104,7 +118,7 @@ export default function ClientOnboardingForm() {
         <div>
           <label htmlFor="phone" className="block text-sm font-medium">Phone</label>
           <input
-            type="tel" 
+            type="tel"
             placeholder='03000000000'
             {...register('phone', { required: 'Phone is required' })}
             className="mt-1 block w-full rounded-md border p-2"
@@ -114,7 +128,7 @@ export default function ClientOnboardingForm() {
         <div>
           <label htmlFor="address" className="block text-sm font-medium">Address</label>
           <input
-            type="text" 
+            type="text"
             placeholder='Street 1, House 2 Block 3'
             {...register('address', { required: 'Address is required' })}
             className="mt-1 block w-full rounded-md border p-2"
@@ -125,7 +139,7 @@ export default function ClientOnboardingForm() {
           <div>
             <label htmlFor="city" className="block text-sm font-medium">City</label>
             <input
-              type="text" 
+              type="text"
               placeholder='Lahore'
               {...register('city', { required: 'City is required' })}
               className="mt-1 block w-full rounded-md border p-2"
@@ -135,7 +149,7 @@ export default function ClientOnboardingForm() {
           <div>
             <label htmlFor="state" className="block text-sm font-medium">State</label>
             <input
-              type="text" 
+              type="text"
               placeholder='Punjab'
               {...register('state', { required: 'State is required' })}
               className="mt-1 block w-full rounded-md border p-2"
@@ -149,7 +163,7 @@ export default function ClientOnboardingForm() {
             <input
               type="number" // Changed from text to number
               placeholder='54000'
-              {...register('zip', { 
+              {...register('zip', {
                 required: 'ZIP is required',
                 valueAsNumber: true, // Convert to number
                 validate: (value) => Number.isInteger(value) || 'ZIP must be an integer'
@@ -162,7 +176,7 @@ export default function ClientOnboardingForm() {
           <div>
             <label htmlFor="country" className="block text-sm font-medium">Country</label>
             <input
-              type="text" 
+              type="text"
               placeholder='Pakistan'
               {...register('country', { required: 'Country is required' })}
               className="mt-1 block w-full rounded-md border p-2"
