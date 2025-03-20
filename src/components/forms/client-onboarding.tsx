@@ -1,9 +1,16 @@
 "use client";
 
-import { storage, BUCKET_ID, databases, DATABASE_ID, ClientProfile_ID, ID } from '@/lib/appwrite.config';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
+import { 
+storage,
+BUCKET_ID,
+databases,
+DATABASE_ID,
+ClientProfile_ID,
+} from '@/lib/appwrite.config';
+import { ID } from "appwrite";;
 import getUserId from '@/utils/userId';
 import {completeOnboarding} from '@/app/onboarding/_actions';
 import { useRouter } from 'next/navigation'
@@ -41,12 +48,12 @@ export default function ClientOnboardingForm() {
   };
 
   const onSubmit = async (data: ClientProfile) => {
-    const userId = await getUserId();
-    const username = await getData();
-    setIsUploading(true);
-    setUploadError(null);
-
     try {
+      const userId = await getUserId();
+      const username = await getData();
+      setIsUploading(true);
+      setUploadError(null);
+
       if (selectedFile) {
         // Upload file using improved method
         const fileRef = await storage.createFile(
@@ -54,10 +61,8 @@ export default function ClientOnboardingForm() {
           ID.unique(),
           selectedFile
         );
-
-        // Get the file URL using the storage.getFileView method
         const fileUrl = storage.getFileView(BUCKET_ID, fileRef.$id);
-
+        console.log("File Url: ", fileUrl)
         const formData = {
           ...data,
           zip: parseInt(data.zip.toString(), 10),
@@ -66,23 +71,28 @@ export default function ClientOnboardingForm() {
           Name: username
         };
 
-        const resp = await databases.createDocument(
-          DATABASE_ID,
-          ClientProfile_ID,
-          ID.unique(),
-          formData
-        );
+        try {
+          const resp = await databases.createDocument(
+            DATABASE_ID,
+            ClientProfile_ID,
+            ID.unique(),
+            formData
+          );
 
-        if (resp.$id) {
-          const onboardingRes = await completeOnboarding('client');
-          if (onboardingRes?.message) {
-            router.push('/cl-dashboard');
+          if (resp.$id) {
+            const onboardingRes = await completeOnboarding('client');
+            if (onboardingRes?.message) {
+              router.push('/cl-dashboard');
+            }
           }
+        } catch (dbError) {
+          console.error('Database Error:', dbError);
+          setUploadError('Failed to create profile. Please try again.');
         }
       }
     } catch (error) {
       console.error('Error:', error);
-      setUploadError(error instanceof Error ? error.message : 'Failed to upload file');
+      setUploadError(error instanceof Error ? error.message : 'Authentication failed');
     } finally {
       setIsUploading(false);
     }

@@ -1,13 +1,15 @@
 import { Client, Storage, Databases, Account, ID } from "appwrite";
-
+import * as sdk from "node-appwrite"
 const client = new Client()
     .setEndpoint(process.env.NEXT_PUBLIC_ENDPOINT_URL || 'https://cloud.appwrite.io/v1')
     .setProject(process.env.NEXT_PUBLIC_PROJECT_ID || '');
 
+const sdkClient = new sdk.Client().setEndpoint(process.env.NEXT_PUBLIC_ENDPOINT_URL || 'https://cloud.appwrite.io/v1')
+.setProject(process.env.NEXT_PUBLIC_PROJECT_ID || '');
 const storage = new Storage(client);
 const databases = new Databases(client);
 const account = new Account(client);
-
+const db = new sdk.Databases(sdkClient);
 const DATABASE_ID = process.env.NEXT_PUBLIC_DATABASE_ID!;
 const USER_COLLECTION_ID = process.env.NEXT_PUBLIC_USER_COLLECTION_ID!;
 const BUCKET_ID = process.env.NEXT_PUBLIC_BUCKET_ID!;
@@ -30,5 +32,6 @@ export {
     ChamberProfileID,
     LawyerProfile_ID,
     ASSISTANTPROFILE_ID,
-    CASE_ID
+    CASE_ID,
+    db
 };
