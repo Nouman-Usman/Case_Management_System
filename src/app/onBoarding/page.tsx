@@ -10,17 +10,30 @@ import ClientOnboardingForm from '@/components/forms/client-onboarding'
 import { RoleSelection } from '@/components/forms/role-selection'
 
 export default function OnboardingComponent() {
-  const { user } = useUser()
+  const { user, isLoaded } = useUser()
   const router = useRouter()
   const [selectedRole, setSelectedRole] = React.useState<string | null>(null)
 
+  React.useEffect(() => {
+    if (isLoaded && user?.publicMetadata?.role) {
+      const role = user.publicMetadata.role as string
+      if (!['client', 'chamber'].includes(role)) {
+        router.push('/')
+      }
+    }
+  }, [isLoaded, user, router])
+
   const renderForm = () => {
+    const role = user?.publicMetadata?.role as string
+    if (role !== selectedRole) {
+      return null
+    }
+
     switch (selectedRole) {
       case 'client':
         return <ClientOnboardingForm />
       case 'chamber':
         return <ChamberOnboardingForm />
-        // return <FileUploadForm />
       default:
         return null
     }

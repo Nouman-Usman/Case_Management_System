@@ -19,43 +19,60 @@ const isAdminRoute = createRouteMatcher(['/admin(.*)'])
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { userId, sessionClaims, redirectToSignIn } = await auth()
   const metadata: { onboardingComplete?: boolean; role?: string } = sessionClaims?.metadata || {};  
+
   if (!isPublicRoute(req)) {
     await auth.protect()
   }
-  if (userId && isOnboardingRoute(req)) {
-    return NextResponse.next()
+
+  // Protect role-specific routes
+  if (isClientRoute(req) && metadata?.role !== 'client') {
+    return NextResponse.redirect(new URL('/', req.url))
   }
-  if (userId && isChmaberRoute(req) && metadata?.role !== 'chamber') {
-    const onboardingUrl = new URL('/onboarding', req.url)
-    return NextResponse.redirect(onboardingUrl)
+  if (isChmaberRoute(req) && metadata?.role !== 'chamber') {
+    return NextResponse.redirect(new URL('/', req.url))
   }
-  if (userId && isClientRoute(req) && metadata?.role !== 'client') {
-  const onboardingUrl = new URL('/onboarding', req.url)
-  return NextResponse.redirect(onboardingUrl)
+  if (isLawyerRoute(req) && metadata?.role !== 'lawyer') {
+    return NextResponse.redirect(new URL('/', req.url))
   }
-  if (userId && isAssistantRoute(req) && metadata?.role !== 'assistant') {
-    const onboardingUrl = new URL('/onboarding', req.url)
-    return NextResponse.redirect(onboardingUrl)
+  if (isAssistantRoute(req) && metadata?.role !== 'assistant') {
+    return NextResponse.redirect(new URL('/', req.url))
   }
-  if (userId && isLawyerRoute(req) && metadata?.role !== 'lawyer') {
-    const onboardingUrl = new URL('/onboarding', req.url)
-    return NextResponse.redirect(onboardingUrl)
-  }
-  if (userId && isPublicRoute(req)) {
-    return NextResponse.redirect(new URL('/onboarding', req.url))
-  }
-  // If the user isn't signed in and the route is private, redirect to sign-in
-  if (!userId && !isPublicRoute(req))
-  {
-    return redirectToSignIn({ returnBackUrl: req.url })
-  }
-  if (userId && !sessionClaims?.metadata?.onboardingComplete) {
-    const onboardingUrl = new URL('/onboarding', req.url)
-    return NextResponse.redirect(onboardingUrl)
+  if (isAdminRoute(req) && metadata?.role !== 'admin') {
+    return NextResponse.redirect(new URL('/', req.url))
   }
 
-  // If the user is logged in and the route is protected, let them view.
-  if (userId && !isPublicRoute(req)) return NextResponse.next()
+  // Base onboarding route handling with role protection
+  if (req.nextUrl.pathname === '/onboarding') {
+    if (!userId) return redirectToSignIn({ returnBackUrl: req.url })
+    if (metadata?.onboardingComplete) {
+      return NextResponse.redirect(new URL(`/${metadata.role}/dashboard`, req.url))
+    }
+    // Only allow specific roles to access base onboarding
+    if (!['client', 'chamber'].includes(metadata?.role || '')) {
+      return NextResponse.redirect(new URL('/', req.url))
+    }
+    return NextResponse.next()
+  }
+
+  // Protect specific onboarding routes
+  if (req.nextUrl.pathname === '/onboarding/lawyer' && metadata?.role !== 'lawyer') {
+    return NextResponse.redirect(new URL('/', req.url))
+  }
+  if (req.nextUrl.pathname === '/onboarding/assistant' && metadata?.role !== 'assistant') {
+    return NextResponse.redirect(new URL('/', req.url))
+  }
+
+  // Handle completed users trying to access public routes
+  if (userId && isPublicRoute(req) && metadata?.onboardingComplete) {
+    return NextResponse.redirect(new URL(`/${metadata.role}/dashboard`, req.url))
+  }
+
+  // Handle unauthenticated users
+  if (!userId && !isPublicRoute(req)) {
+    return redirectToSignIn({ returnBackUrl: req.url })
+  }
+
+  return NextResponse.next()
 })
 
 export const config = {
