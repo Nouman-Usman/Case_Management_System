@@ -14,6 +14,7 @@ import { AssistantsDataTable } from '@/components/tables/assistants-table'
 import { CasesDataTable } from '@/components/tables/cases-table'
 import { lawyersCountAssociatedChamber,assistantCountAssociatedChamber,totalActiveCases } from '@/lib/actions/lawyer.actions'
 
+// import {getUserDetailsByUserId} from '@/lib/appointments/appointment'
 interface DashboardContentProps {
   userId?: string
   userName?: string
@@ -29,7 +30,7 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
   const [lawyerCount, setLawyerCount] = useState(0);
   const [assistantCount, setAssistantCount] = useState(0);
   const [casesCount, setCasesCount] = useState(0);
-
+  // getUserDetailsByUserId()
   useEffect(() => {
     const fetchCounts = async () => {
       if (!userId) {

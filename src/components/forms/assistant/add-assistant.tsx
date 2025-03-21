@@ -9,6 +9,8 @@ import { Mail, Lock, Wand2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Inter } from 'next/font/google'
 import { LawyersDataTable } from "@/components/tables/lawyers-table"
+import { addUserToClerk } from '@/lib/actions/chamber.action'
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,7 +20,6 @@ export default function AddAssistantForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [showTable, setShowTable] = useState(false)
-
   const generatePassword = () => {
     setIsGenerating(true)
     const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$&*()_"
@@ -35,7 +36,17 @@ export default function AddAssistantForm() {
     setIsLoading(true)
     // Handle form submission here
     console.log({ email, password })
-    await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
+    try {
+      const response = await addUserToClerk(email, password, "assistant")
+      if (response) {
+        setEmail("")
+        setPassword("")
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
     setIsLoading(false)
   }
 

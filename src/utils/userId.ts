@@ -7,7 +7,7 @@ export default async function getUserId() {
     if (!userId) return null;
     
     // Extract the last 16 characters
-    const finalId = userId.slice(-16);
+    // const finalId = userId.slice(-16);
     
-    return finalId;
+    return userId;
 }

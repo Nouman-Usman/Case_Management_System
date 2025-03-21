@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
+import { addUserToClerk } from '@/lib/actions/chamber.action'
+import { set } from "zod"
 
 export default function AddLawyerForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-
+  const [isLoading, setIsLoading] = useState(false)
   const generatePassword = () => {
-    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?"
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%()_"
     let generatedPassword = ""
     for (let i = 0; i < 20; i++) {
       generatedPassword += chars.charAt(Math.floor(Math.random() * chars.length))
@@ -19,10 +21,21 @@ export default function AddLawyerForm() {
     setPassword(generatedPassword)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission here
-    console.log({ email, password })
+    try {
+      setIsLoading(true)
+      const response = await addUserToClerk(email, password, "lawyer")
+      if (response) {
+        // Reset form
+        setEmail("")
+        setPassword("")
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -43,7 +56,7 @@ export default function AddLawyerForm() {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="flex gap-2">
@@ -60,8 +73,8 @@ export default function AddLawyerForm() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full">
-            Add Lawyer
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Adding Lawyer..." : "Add Lawyer"}
           </Button>
         </form>
       </CardContent>
