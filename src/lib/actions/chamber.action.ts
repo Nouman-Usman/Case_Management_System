@@ -6,7 +6,7 @@ const client = clerkClient
 export async function addUserToClerk(email: string, password: string, type: string) {
     try {
         const response = await client.users.createUser({
-            username: "Test456240576",
+            // username: "Test456240576",
             emailAddress: [
                 email
             ],
