@@ -18,7 +18,6 @@ const isAdminRoute = createRouteMatcher(['/admin(.*)'])
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { userId, sessionClaims, redirectToSignIn } = await auth()
   const metadata: { onboardingComplete?: boolean; role?: string } = sessionClaims?.metadata || {};
-
   if (!isPublicRoute(req)) {
     await auth.protect()
   }
