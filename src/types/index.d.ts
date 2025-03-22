@@ -23,6 +23,7 @@ export declare interface DeleteUserParams {
 }
 
 export declare interface LawyerProfile {
+  userId: string;
   email: string;
   name: string;
   phone: string;
@@ -45,6 +46,7 @@ export declare interface LawyerProfile {
   casesWon: number; // not required
   casesLost: number; // not required
   profilePic: string;
+  verificationStatus:string;
 }
 
 export declare interface ClientProfile {

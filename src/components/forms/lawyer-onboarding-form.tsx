@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import getUserData from '@/utils/getUserData';
 import {
   Select,
   SelectContent,
@@ -28,26 +27,12 @@ import getUserId from '@/utils/userId';
 import {completeOnboarding} from '@/app/onboarding/_actions';
 import { useRouter } from 'next/navigation';
 import getData from "@/utils/getUserData";
+import getUserEmail from '@/utils/getUserEmail';
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import type { LawyerProfile } from "@/types/index.d.ts";
+import { EmailAddress } from '@clerk/nextjs/server';
 
-// interface LawyerProfile {
-//   userName: string;
-//   fullName: string;
-//   barCouncilNumber: string;
-//   specialization: string;
-//   yearsOfPractice: number;
-//   phone: string;
-//   email: string;
-//   chamberAddress: string;
-//   city: string;
-//   state: string;
-//   zip: number;
-//   country: string;
-//   profilePicUrl: string;
-//   barLicenseUrl: string;
-// }
 
 export default function LawyerOnboardingForm() {
   const router = useRouter();
@@ -155,18 +140,107 @@ export default function LawyerOnboardingForm() {
                       {errors.name && <p className="text-red-500 text-sm">Full Name is required</p>}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="barCouncilNumber">Bar Council Number</Label>
+                      <Label htmlFor="phoneNumber">Phone Number</Label>
                       <Input
-                        id="barCouncilNumber"
-                        placeholder="Bar Council Number"
-                        {...register('barCouncilNumber', { required: true })}
-                        className={`border ${errors.barCouncilNumber ? 'border-red-500' : 'border-gray-300'}`}
+                      id="phoneNumber"
+                      placeholder="1234567890"
+                      {...register('phone', { required: true })}
+                      className={`border ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
                       />
-                      {errors.barCouncilNumber && <p className="text-red-500 text-sm">Bar Council Number is required</p>}
+                      {errors.phone && <p className="text-red-500 text-sm">Phone number is required</p>}
                     </div>
-                  </div>
-                </div>
-              )}
+                    <div className="space-y-2">
+                      <Label htmlFor="address">Address</Label>
+                      <Input
+                      id="address"
+                      placeholder="Your Address"
+                      {...register('address', { required: true })}
+                      className={`border ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.address && <p className="text-red-500 text-sm">Address is required</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input
+                      id="city"
+                      placeholder="City"
+                      {...register('city', { required: true })}
+                      className={`border ${errors.city ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.city && <p className="text-red-500 text-sm">City is required</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State</Label>
+                      <Input
+                      id="state"
+                      placeholder="State"
+                      {...register('state', { required: true })}
+                      className={`border ${errors.state ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.state && <p className="text-red-500 text-sm">State is required</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="zip">Zip Code</Label>
+                      <Input
+                      id="zip"
+                      placeholder="Zip Code"
+                      {...register('zip', { required: true })}
+                      className={`border ${errors.zip ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.zip && <p className="text-red-500 text-sm">Zip code is required</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="country">Country</Label>
+                      <Input
+                      id="country"
+                      placeholder="Country"
+                      {...register('country', { required: true })}
+                      className={`border ${errors.country ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.country && <p className="text-red-500 text-sm">Country is required</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="education">Education</Label>
+                      <Input
+                      id="education"
+                      placeholder="Education"
+                      {...register('education', { required: true })}
+                      className={`border ${errors.education ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.education && <p className="text-red-500 text-sm">Education is required</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="languages">Languages</Label>
+                      <Input
+                      id="languages"
+                      placeholder="Languages (comma separated)"
+                      {...register('languages')}
+                      className="border border-gray-300"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="consultationFees">Consultation Fees</Label>
+                      <Input
+                      id="consultationFees"
+                      type="number"
+                      placeholder="Consultation Fees"
+                      {...register('consultationFees', { required: true, valueAsNumber: true })}
+                      className={`border ${errors.consultationFees ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.consultationFees && <p className="text-red-500 text-sm">Consultation fees are required</p>}
+                    </div></div>
+                      <div className="space-y-2">
+                        <Label htmlFor="barCouncilNumber">Bar Council Number</Label>
+                        <Input
+                          id="barCouncilNumber"
+                          placeholder="Bar Council Number"
+                          {...register('barCouncilNumber', { required: true })}
+                          className={`border ${errors.barCouncilNumber ? 'border-red-500' : 'border-gray-300'}`}
+                        />
+                        {errors.barCouncilNumber && <p className="text-red-500 text-sm">Bar Council Number is required</p>}
+                      </div>
+                    </div>
+                )}
 
               {step === 2 && (
                 <div className="space-y-6">
@@ -259,23 +333,21 @@ export default function LawyerOnboardingForm() {
   };
 
   const onSubmit = async (data: LawyerProfile) => {
-
-    console.log("Currently logged in user's data " , getUserData());
-    
     if (step !== totalSteps) {
       nextStep();
       return;
     }
+  
     const userId = await getUserId();
     const username = await getData();
+    const userEmail = await getUserEmail();
     setIsUploading(true);
     setUploadError(null);
-    
-
+  
     try {
       let profilePicUrl = '';
       let barLicenseUrl = '';
-
+  
       if (selectedProfilePic) {
         const profilePicRef = await storage.createFile(
           BUCKET_ID,
@@ -283,8 +355,9 @@ export default function LawyerOnboardingForm() {
           selectedProfilePic
         );
         profilePicUrl = storage.getFileView(BUCKET_ID, profilePicRef.$id);
+        console.log('Profile Pic URL:', profilePicUrl);
       }
-
+  
       if (selectedLicense) {
         const licenseRef = await storage.createFile(
           BUCKET_ID,
@@ -292,27 +365,34 @@ export default function LawyerOnboardingForm() {
           selectedLicense
         );
         barLicenseUrl = storage.getFileView(BUCKET_ID, licenseRef.$id);
+        console.log('Bar License URL:', barLicenseUrl);
       }
-
+  
+      // Ensure `languages` is an array
+      const languagesArray = Array.isArray(data.languages)
+        ? data.languages
+        : typeof data.languages === 'string' && data.languages
+        ? (data.languages as string).split(',').map((lang) => lang.trim()).filter(Boolean)
+        : [];
+  
       const formData = {
         ...data,
-        userName: username,
-        yearsOfPractice: parseInt(data.experience.toString(), 10),
-        // zip: parseInt(data.zip.toString(), 10),
-        zip: "nothing",
-        profilePicUrl,
+        email: userEmail,
+        profilePic: profilePicUrl,
         barLicenseUrl,
         userId,
-        verificationStatus: 'pending'
+        associatedChamberId: "1234",
+        verificationStatus: 'pending',
+        languages: languagesArray, // Submit as an array
       };
-
+  
       const resp = await databases.createDocument(
         DATABASE_ID,
-        LawyerProfile_ID ,
+        LawyerProfile_ID,
         ID.unique(),
         formData
       );
-
+  
       if (resp.$id) {
         const onboardingRes = await completeOnboarding('lawyer');
         if (onboardingRes?.message) {
@@ -326,6 +406,7 @@ export default function LawyerOnboardingForm() {
       setIsUploading(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen p-6 bg-gradient-to-br from-blue-50 via-white to-purple-50">

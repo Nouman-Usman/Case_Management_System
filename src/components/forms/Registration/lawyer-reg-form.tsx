@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 
 const LawyerRegistrationForm = () => {
   const [lawyerProfile, setLawyerProfile] = useState<LawyerProfile>({
+    userId: "",
     email: "",
     name: "",
     phone: "",
@@ -31,6 +32,7 @@ const LawyerRegistrationForm = () => {
     casesWon: 0, // not required
     casesLost: 0, // not required
     profilePic: "",
+    verificationStatus:"",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
