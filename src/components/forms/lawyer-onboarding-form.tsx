@@ -3,6 +3,18 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   storage,
   BUCKET_ID,
@@ -15,6 +27,8 @@ import getUserId from '@/utils/userId';
 import {completeOnboarding} from '@/app/onboarding/_actions';
 import { useRouter } from 'next/navigation';
 import getData from "@/utils/getUserData";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle, AlertCircle } from "lucide-react";
 
 interface LawyerProfile {
   userName: string;
@@ -42,6 +56,11 @@ export default function LawyerOnboardingForm() {
   const { register, handleSubmit, formState: { errors } } = useForm<LawyerProfile>();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [step, setStep] = useState(1);
+  const totalSteps = 3;
+
+  const nextStep = () => setStep(prev => Math.min(prev + 1, totalSteps));
+  const prevStep = () => setStep(prev => Math.max(prev - 1, 1));
 
   const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -67,237 +86,291 @@ export default function LawyerOnboardingForm() {
     }
   };
 
+  const renderProgress = () => {
+    const progress = ((step - 1) / (totalSteps - 1)) * 100;
+    return (
+      <div className="w-full mb-8">
+        <div className="relative">
+          <Progress 
+            value={progress} 
+            className="h-2 bg-gray-100/50 backdrop-blur-sm" 
+          />
+          <div className="absolute top-0 left-0 w-full flex justify-between -mt-2">
+            {[1, 2, 3].map((stepNumber) => (
+              <motion.div
+                key={stepNumber}
+                className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  step >= stepNumber ? 'bg-primary text-white' : 'bg-gray-200'
+                }`}
+                initial={{ scale: 0.8 }}
+                animate={{ scale: step === stepNumber ? 1 : 0.8 }}
+              >
+                {step > stepNumber ? (
+                  <CheckCircle className="w-5 h-5" />
+                ) : (
+                  stepNumber
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+        <div className="flex justify-between mt-4 text-sm">
+          <span className={step >= 1 ? 'text-primary font-medium' : 'text-gray-500'}>Basic Information</span>
+          <span className={step >= 2 ? 'text-primary font-medium' : 'text-gray-500'}>Professional Details</span>
+          <span className={step >= 3 ? 'text-primary font-medium' : 'text-gray-500'}>Contact & Documents</span>
+        </div>
+      </div>
+    );
+  };
+
+  const renderFormStep = () => {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
+            <CardContent className="p-8">
+              {step === 1 && (
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-2 mb-6">
+                    <div className="h-8 w-1 bg-primary rounded-full" />
+                    <h2 className="text-2xl font-semibold">Basic Information</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName">Full Name</Label>
+                      <Input
+                        id="fullName"
+                        placeholder="Full Name"
+                        {...register('fullName', { required: true })}
+                        className={`border ${errors.fullName ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.fullName && <p className="text-red-500 text-sm">Full Name is required</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="barCouncilNumber">Bar Council Number</Label>
+                      <Input
+                        id="barCouncilNumber"
+                        placeholder="Bar Council Number"
+                        {...register('barCouncilNumber', { required: true })}
+                        className={`border ${errors.barCouncilNumber ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.barCouncilNumber && <p className="text-red-500 text-sm">Bar Council Number is required</p>}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-2 mb-6">
+                    <div className="h-8 w-1 bg-primary rounded-full" />
+                    <h2 className="text-2xl font-semibold">Professional Details</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="specialization">Specialization</Label>
+                      <Select onValueChange={(value) => register('specialization').onChange({ target: { value } })}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Specialization" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Criminal Law">Criminal Law</SelectItem>
+                          <SelectItem value="Civil Law">Civil Law</SelectItem>
+                          <SelectItem value="Corporate Law">Corporate Law</SelectItem>
+                          <SelectItem value="Family Law">Family Law</SelectItem>
+                          <SelectItem value="Constitutional Law">Constitutional Law</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="yearsOfPractice">Years of Practice</Label>
+                      <Input
+                        id="yearsOfPractice"
+                        type="number"
+                        placeholder="Years of Practice"
+                        {...register('yearsOfPractice', { required: true })}
+                        className={`border ${errors.yearsOfPractice ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.yearsOfPractice && <p className="text-red-500 text-sm">Years of Practice is required</p>}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step === 3 && (
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-2 mb-6">
+                    <div className="h-8 w-1 bg-primary rounded-full" />
+                    <h2 className="text-2xl font-semibold">Contact & Documents</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="profilePic">Profile Picture</Label>
+                      <Input
+                        id="profilePic"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleProfilePicChange}
+                        disabled={isUploading}
+                        className="border border-gray-300"
+                      />
+                      {profilePic && (
+                        <div className="mt-2">
+                          <Image
+                            src={profilePic}
+                            alt="Profile Preview"
+                            width={100}
+                            height={100}
+                            className="rounded-full object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="barLicense">Bar License</Label>
+                      <Input
+                        id="barLicense"
+                        type="file"
+                        accept=".pdf,image/*"
+                        onChange={handleLicenseChange}
+                        disabled={isUploading}
+                        className={`border ${errors.barLicenseUrl ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.barLicenseUrl && <p className="text-red-500 text-sm">Bar License is required</p>}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </AnimatePresence>
+    );
+  };
+
   const onSubmit = async (data: LawyerProfile) => {
+    if (step !== totalSteps) {
+      nextStep();
+      return;
+    }
     const userId = await getUserId();
     const username = await getData();
     setIsUploading(true);
     setUploadError(null);
 
-    // try {
-    //   let profilePicUrl = '';
-    //   let barLicenseUrl = '';
+    try {
+      let profilePicUrl = '';
+      let barLicenseUrl = '';
 
-    //   if (selectedProfilePic) {
-    //     const profilePicRef = await storage.createFile(
-    //       BUCKET_ID,
-    //       ID.unique(),
-    //       selectedProfilePic
-    //     );
-    //     profilePicUrl = storage.getFileView(BUCKET_ID, profilePicRef.$id);
-    //   }
+      if (selectedProfilePic) {
+        const profilePicRef = await storage.createFile(
+          BUCKET_ID,
+          ID.unique(),
+          selectedProfilePic
+        );
+        profilePicUrl = storage.getFileView(BUCKET_ID, profilePicRef.$id);
+      }
 
-    //   if (selectedLicense) {
-    //     const licenseRef = await storage.createFile(
-    //       BUCKET_ID,
-    //       ID.unique(),
-    //       selectedLicense
-    //     );
-    //     barLicenseUrl = storage.getFileView(BUCKET_ID, licenseRef.$id);
-    //   }
+      if (selectedLicense) {
+        const licenseRef = await storage.createFile(
+          BUCKET_ID,
+          ID.unique(),
+          selectedLicense
+        );
+        barLicenseUrl = storage.getFileView(BUCKET_ID, licenseRef.$id);
+      }
 
-    //   const formData = {
-    //     ...data,
-    //     userName: username,
-    //     yearsOfPractice: parseInt(data.yearsOfPractice.toString(), 10),
-    //     zip: parseInt(data.zip.toString(), 10),
-    //     profilePicUrl,
-    //     barLicenseUrl,
-    //     userId,
-    //     verificationStatus: 'pending'
-    //   };
+      const formData = {
+        ...data,
+        userName: username,
+        yearsOfPractice: parseInt(data.yearsOfPractice.toString(), 10),
+        zip: parseInt(data.zip.toString(), 10),
+        profilePicUrl,
+        barLicenseUrl,
+        userId,
+        verificationStatus: 'pending'
+      };
 
-    //   const resp = await databases.createDocument(
-    //     DATABASE_ID,
-    //     LawyerProfile_ID ,
-    //     ID.unique(),
-    //     formData
-    //   );
+      const resp = await databases.createDocument(
+        DATABASE_ID,
+        LawyerProfile_ID ,
+        ID.unique(),
+        formData
+      );
 
-    //   if (resp.$id) {
-    //     const onboardingRes = await completeOnboarding('lawyer');
-    //     if (onboardingRes?.message) {
-    //       router.push('/lawyer/dashboard');
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.error('Error:', error);
-    //   setUploadError(error instanceof Error ? error.message : 'Failed to upload files');
-    // } finally {
-    //   setIsUploading(false);
-    // }
+      if (resp.$id) {
+        const onboardingRes = await completeOnboarding('lawyer');
+        if (onboardingRes?.message) {
+          router.push('/lawyer/dashboard');
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setUploadError(error instanceof Error ? error.message : 'Failed to upload files');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto p-6 space-y-6">
-      <div className="space-y-4">
-        {/* Basic Information */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="fullName" className="block text-sm font-medium">Full Name</label>
-            <input
-              type="text"
-              placeholder="Full Name"
-              {...register('fullName', { required: 'Full name is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-          <div>
-            <label htmlFor="barCouncilNumber" className="block text-sm font-medium">Bar Council Number</label>
-            <input
-              type="text"
-              placeholder="Bar Council Number"
-              {...register('barCouncilNumber', { required: 'Bar Council Number is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
+    <div className="min-h-screen p-6 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+            Lawyer Registration
+          </h1>
+          <p className="text-gray-600">Complete your profile to join our legal network</p>
         </div>
 
-        {/* Professional Information */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="specialization" className="block text-sm font-medium">Specialization</label>
-            <select
-              {...register('specialization', { required: 'Specialization is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
+        {renderProgress()}
+        
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {renderFormStep()}
+          
+          <div className="flex justify-between pt-4">
+            {step > 1 && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                className="hover:bg-gray-100 transition-colors"
+              >
+                Previous
+              </Button>
+            )}
+            <Button 
+              type="submit"
+              className={`ml-auto transition-all duration-200 ${
+                step === totalSteps 
+                  ? 'bg-primary hover:bg-primary/90' 
+                  : 'bg-blue-500 hover:bg-blue-600'
+              }`}
+              disabled={isUploading}
             >
-              <option value="">Select Specialization</option>
-              <option value="Criminal Law">Criminal Law</option>
-              <option value="Civil Law">Civil Law</option>
-              <option value="Corporate Law">Corporate Law</option>
-              <option value="Family Law">Family Law</option>
-              <option value="Constitutional Law">Constitutional Law</option>
-            </select>
+              {step === totalSteps 
+                ? (isUploading ? 'Uploading...' : 'Submit Registration') 
+                : 'Continue'}
+            </Button>
           </div>
-          <div>
-            <label htmlFor="yearsOfPractice" className="block text-sm font-medium">Years of Practice</label>
-            <input
-              type="number"
-              placeholder="Years of Practice"
-              {...register('yearsOfPractice', { required: 'Years of practice is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-        </div>
+        </form>
 
-        {/* Contact Information */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium">Phone</label>
-            <input
-              type="tel"
-              placeholder="Phone Number"
-              {...register('phone', { required: 'Phone is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium">Email</label>
-            <input
-              type="email"
-              placeholder="Email"
-              {...register('email', { required: 'Email is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-        </div>
-
-        {/* Chamber Address */}
-        <div>
-          <label htmlFor="chamberAddress" className="block text-sm font-medium">Chamber Address</label>
-          <input
-            type="text"
-            placeholder="Chamber Address"
-            {...register('chamberAddress', { required: 'Chamber address is required' })}
-            className="mt-1 block w-full rounded-md border p-2"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="city" className="block text-sm font-medium">City</label>
-            <input
-              type="text"
-              placeholder="City"
-              {...register('city', { required: 'City is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-          <div>
-            <label htmlFor="state" className="block text-sm font-medium">State</label>
-            <input
-              type="text"
-              placeholder="State"
-              {...register('state', { required: 'State is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="zip" className="block text-sm font-medium">ZIP Code</label>
-            <input
-              type="text"
-              placeholder="ZIP Code"
-              {...register('zip', { required: 'ZIP is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-          <div>
-            <label htmlFor="country" className="block text-sm font-medium">Country</label>
-            <input
-              type="text"
-              placeholder="Country"
-              {...register('country', { required: 'Country is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-        </div>
-
-        {/* File Uploads */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="profilePic" className="block text-sm font-medium">Profile Picture</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleProfilePicChange}
-              className="mt-1 block w-full"
-              disabled={isUploading}
-            />
-            {profilePic && (
-              <Image
-                src={profilePic}
-                alt="Profile Picture Preview"
-                width={100}
-                height={100}
-                className="mt-2 object-cover rounded"
-              />
-            )}
-          </div>
-          <div>
-            <label htmlFor="barLicense" className="block text-sm font-medium">Bar License (PDF/Image)</label>
-            <input
-              type="file"
-              accept=".pdf,image/*"
-              onChange={handleLicenseChange}
-              className="mt-1 block w-full"
-              disabled={isUploading}
-            />
-            {uploadError && (
-              <p className="text-red-500 text-sm mt-1">{uploadError}</p>
-            )}
-          </div>
-        </div>
+        {uploadError && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center space-x-2 text-red-500 bg-red-50 p-4 rounded-lg mt-4"
+          >
+            <AlertCircle className="w-5 h-5" />
+            <p>{uploadError}</p>
+          </motion.div>
+        )}
       </div>
-
-      <button
-        type="submit"
-        disabled={isUploading}
-        className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors disabled:bg-blue-300"
-      >
-        {isUploading ? 'Uploading...' : 'Register as Lawyer'}
-      </button>
-    </form>
+    </div>
   );
 }

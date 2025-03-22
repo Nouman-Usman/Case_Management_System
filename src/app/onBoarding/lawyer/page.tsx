@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
-import LawyerOnboardingForm from '@/components/forms/lawyer-onboarding'
+import LawyerOnboardingForm from '@/components/forms/lawyer-onboarding-form'
 
 
 export default function OnboardingComponent() {
