@@ -1,170 +1,241 @@
-"use client";
+'use client'
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import Image from 'next/image';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
+import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 
-interface AssistantOnboardingFormData extends Omit<AssistantProfile, 'casesAssisted'> {}
+// Add these constants for dropdown options
+const specializations = [
+  "Legal Research",
+  "Document Preparation",
+  "Case Management",
+  "Client Communication",
+  "Legal Writing",
+  "Court Filing",
+  "Administrative Support",
+  "Paralegal Services"
+]
+
+const languages = [
+  "English",
+  "Spanish",
+  "French",
+  "German",
+  "Chinese",
+  "Japanese",
+  "Arabic",
+  "Other"
+]
+
+const formSchema = z.object({
+  fullName: z.string().min(2, 'Name must be at least 2 characters'),
+  // email: z.string().email('Invalid email address'),
+  phone: z.string().min(10, 'Invalid phone number'),
+  experience: z.string().min(1, 'Experience is required'),
+  specializations: z.string().min(1, 'Please select a specialization'),
+  education: z.string().min(1, 'Education details are required'),
+  languages: z.string().min(1, 'Please select a language'),
+})
 
 export default function AssistantOnboardingForm() {
-  const [profileImage, setProfileImage] = useState<string>('');
-  const { register, handleSubmit, formState: { errors } } = useForm<AssistantOnboardingFormData>();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      fullName: '',
+      // email: '',
+      phone: '',
+      experience: '',
+      specializations: '',
+      education: '',
+      languages: '',
+    },
+  })
 
-  const onSubmit = (data: AssistantOnboardingFormData) => {
-    console.log(data);
-  };
-
-  const availableRoles = [
-    'Legal Research',
-    'Document Preparation',
-    'Case Management',
-    'Client Communication',
-    'Court Filing',
-    'Calendar Management'
-  ];
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values)
+    // Add submission logic here
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto p-6 space-y-6">
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="userId" className="block text-sm font-medium">User ID</label>
-          <input
-            type="text"
-            {...register('userId', { required: 'User ID is required' })}
-            className="mt-1 block w-full rounded-md border p-2"
-          />
-        </div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader className="text-center pb-6">
+          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+            Assistant Registration
+          </h2>
+          <p className="text-gray-500 text-sm mt-2">
+            Join our legal team by completing your profile
+          </p>
+        </CardHeader>
+        <Separator className="mb-8" />
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg text-gray-700">Personal Information</h3>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-gray-700">Full Name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="John Doe" 
+                            {...field}
+                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" 
+                          />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium">Email</label>
-          <input
-            type="email"
-            {...register('email', { required: 'Email is required' })}
-            className="mt-1 block w-full rounded-md border p-2"
-          />
-        </div>
 
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium">Full Name</label>
-          <input
-            type="text"
-            {...register('name', { required: 'Name is required' })}
-            className="mt-1 block w-full rounded-md border p-2"
-          />
-        </div>
 
-        <div>
-          <label htmlFor="phone" className="block text-sm font-medium">Phone</label>
-          <input
-            type="tel"
-            {...register('phone', { required: 'Phone is required' })}
-            className="mt-1 block w-full rounded-md border p-2"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="address" className="block text-sm font-medium">Address</label>
-          <input
-            type="text"
-            {...register('address', { required: 'Address is required' })}
-            className="mt-1 block w-full rounded-md border p-2"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="city" className="block text-sm font-medium">City</label>
-            <input
-              type="text"
-              {...register('city', { required: 'City is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="state" className="block text-sm font-medium">State</label>
-            <input
-              type="text"
-              {...register('state', { required: 'State is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="zip" className="block text-sm font-medium">ZIP Code</label>
-            <input
-              type="text"
-              {...register('zip', { required: 'ZIP is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="country" className="block text-sm font-medium">Country</label>
-            <input
-              type="text"
-              {...register('country', { required: 'Country is required' })}
-              className="mt-1 block w-full rounded-md border p-2"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Roles</label>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            {availableRoles.map((role) => (
-              <div key={role} className="flex items-center">
-                <input
-                  type="checkbox"
-                  value={role}
-                  {...register('roles')}
-                  className="rounded border-gray-300"
-                />
-                <label className="ml-2 text-sm">{role}</label>
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-gray-700">Phone Number</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="+1234567890" 
+                            {...field}
+                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" 
+                          />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
 
-        <div>
-          <label htmlFor="profilePic" className="block text-sm font-medium">Profile Picture</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setProfileImage(reader.result as string);
-                };
-                reader.readAsDataURL(file);
-              }
-            }}
-            className="mt-1 block w-full"
-          />
-          {profileImage && (
-            <div className="mt-2">
-              <Image
-                src={profileImage}
-                alt="Profile Preview"
-                width={100}
-                height={100}
-                className="rounded-full object-cover"
-              />
-            </div>
-          )}
-        </div>
-      </div>
+              <Separator />
 
-      <button
-        type="submit"
-        className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
-      >
-        Submit
-      </button>
-    </form>
-  );
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg text-gray-700">Professional Details</h3>
+                
+                <FormField
+                  control={form.control}
+                  name="specializations"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">Primary Specialization</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select your specialization" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {specializations.map((spec) => (
+                            <SelectItem key={spec} value={spec}>
+                              {spec}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="languages"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">Primary Language</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select your primary language" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {languages.map((lang) => (
+                            <SelectItem key={lang} value={lang}>
+                              {lang}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="education"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">Education</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="List your educational qualifications"
+                          {...field}
+                          className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 min-h-[100px]"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="experience"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">Work Experience</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Describe your relevant work experience"
+                          {...field}
+                          className="min-h-[120px] resize-none"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-2.5 rounded-lg hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 font-medium"
+              >
+                Complete Registration
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }
