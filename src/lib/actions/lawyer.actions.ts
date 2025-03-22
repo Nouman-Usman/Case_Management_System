@@ -2,6 +2,7 @@ import getUserId from "../../utils/userId";
 import { LawyerProfile_ID, databases, DATABASE_ID, ASSISTANTPROFILE_ID,CASE_ID } from "../appwrite.config";
 import { Query } from "appwrite";
 
+
 async function lawyersCountAssociatedChamber(): Promise<number> {
     try {
         // Validate imported constants

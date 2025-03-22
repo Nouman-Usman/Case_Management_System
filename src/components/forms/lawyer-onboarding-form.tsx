@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import getUserData from '@/utils/getUserData';
 import {
   Select,
   SelectContent,
@@ -29,23 +30,24 @@ import { useRouter } from 'next/navigation';
 import getData from "@/utils/getUserData";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, AlertCircle } from "lucide-react";
+import type { LawyerProfile } from "@/types/index.d.ts";
 
-interface LawyerProfile {
-  userName: string;
-  fullName: string;
-  barCouncilNumber: string;
-  specialization: string;
-  yearsOfPractice: number;
-  phone: string;
-  email: string;
-  chamberAddress: string;
-  city: string;
-  state: string;
-  zip: number;
-  country: string;
-  profilePicUrl: string;
-  barLicenseUrl: string;
-}
+// interface LawyerProfile {
+//   userName: string;
+//   fullName: string;
+//   barCouncilNumber: string;
+//   specialization: string;
+//   yearsOfPractice: number;
+//   phone: string;
+//   email: string;
+//   chamberAddress: string;
+//   city: string;
+//   state: string;
+//   zip: number;
+//   country: string;
+//   profilePicUrl: string;
+//   barLicenseUrl: string;
+// }
 
 export default function LawyerOnboardingForm() {
   const router = useRouter();
@@ -147,10 +149,10 @@ export default function LawyerOnboardingForm() {
                       <Input
                         id="fullName"
                         placeholder="Full Name"
-                        {...register('fullName', { required: true })}
-                        className={`border ${errors.fullName ? 'border-red-500' : 'border-gray-300'}`}
+                        {...register('name', { required: true })}
+                        className={`border ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                       />
-                      {errors.fullName && <p className="text-red-500 text-sm">Full Name is required</p>}
+                      {errors.name && <p className="text-red-500 text-sm">Full Name is required</p>}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="barCouncilNumber">Bar Council Number</Label>
@@ -175,7 +177,9 @@ export default function LawyerOnboardingForm() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="specialization">Specialization</Label>
-                      <Select onValueChange={(value) => register('specialization').onChange({ target: { value } })}>
+
+                      {/* practiceArea name; change it according to the DB attribute */}
+                      <Select onValueChange={(value) => register('practiceAreas').onChange({ target: { value } })}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select Specialization" />
                         </SelectTrigger>
@@ -194,10 +198,10 @@ export default function LawyerOnboardingForm() {
                         id="yearsOfPractice"
                         type="number"
                         placeholder="Years of Practice"
-                        {...register('yearsOfPractice', { required: true })}
-                        className={`border ${errors.yearsOfPractice ? 'border-red-500' : 'border-gray-300'}`}
+                        {...register('experience', { required: true })}
+                        className={`border ${errors.experience ? 'border-red-500' : 'border-gray-300'}`}
                       />
-                      {errors.yearsOfPractice && <p className="text-red-500 text-sm">Years of Practice is required</p>}
+                      {errors.experience && <p className="text-red-500 text-sm">Years of Practice is required</p>}
                     </div>
                   </div>
                 </div>
@@ -255,6 +259,9 @@ export default function LawyerOnboardingForm() {
   };
 
   const onSubmit = async (data: LawyerProfile) => {
+
+    console.log("Currently logged in user's data " , getUserData());
+    
     if (step !== totalSteps) {
       nextStep();
       return;
@@ -263,6 +270,7 @@ export default function LawyerOnboardingForm() {
     const username = await getData();
     setIsUploading(true);
     setUploadError(null);
+    
 
     try {
       let profilePicUrl = '';
@@ -289,8 +297,9 @@ export default function LawyerOnboardingForm() {
       const formData = {
         ...data,
         userName: username,
-        yearsOfPractice: parseInt(data.yearsOfPractice.toString(), 10),
-        zip: parseInt(data.zip.toString(), 10),
+        yearsOfPractice: parseInt(data.experience.toString(), 10),
+        // zip: parseInt(data.zip.toString(), 10),
+        zip: "nothing",
         profilePicUrl,
         barLicenseUrl,
         userId,

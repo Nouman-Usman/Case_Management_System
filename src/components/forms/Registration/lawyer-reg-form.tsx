@@ -17,16 +17,19 @@ const LawyerRegistrationForm = () => {
     state: "",
     zip: "",
     country: "",
-    practiceAreas: [],
-    experience: "",
-    education: "",
-    languages: [],
+    barCouncilNumber: "",
+    barLicenseUrl: "",
+    associatedChamberId: "",
+    practiceAreas: [], // Array of practice areas
+    experience: "", //not required
+    education: "",  //not required
+    languages: [], //not required
     consultationFees: 0,
     rating: 0,
-    reviews: [],
-    casesHandled: 0,
-    casesWon: 0,
-    casesLost: 0,
+    reviews: [], 
+    casesHandled: 0, // not required
+    casesWon: 0, // not required
+    casesLost: 0, // not required
     profilePic: "",
   });
 

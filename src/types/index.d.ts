@@ -31,6 +31,8 @@ export declare interface LawyerProfile {
   state: string;
   zip: string;
   country: string;
+  barCouncilNumber: string;
+  barLicenseUrl: string;
   associatedChamberId: string;
   practiceAreas: string[]; // Array of practice areas
   experience: string; //not required
