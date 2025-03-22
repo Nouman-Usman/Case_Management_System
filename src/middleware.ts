@@ -61,10 +61,10 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
   // Protect specific onboarding routes
   if (req.nextUrl.pathname === '/onboarding/lawyer' && metadata?.role !== 'lawyer') {
-    return NextResponse.redirect(new URL('/', req.url))
+    return NextResponse.redirect(new URL('/unauthorized', req.url))
   }
   if (req.nextUrl.pathname === '/onboarding/assistant' && metadata?.role !== 'assistant') {
-    return NextResponse.redirect(new URL('/', req.url))
+    return NextResponse.redirect(new URL('/unauthorized', req.url))
   }
 
   // Handle completed users trying to access public routes
