@@ -18,6 +18,7 @@ const AssistantRegistrationForm = () => {
     state: "",
     zip: "",
     country: "",
+    associatedChamberId: "",
     casesAssisted: [], // Array of case IDs
     profilePic: "",
     pern: [], // Array of roles

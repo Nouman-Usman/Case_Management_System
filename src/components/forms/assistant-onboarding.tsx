@@ -246,9 +246,9 @@ export default function AssistantOnboardingForm() {
       const formData = {
         ...data,
         email: userEmail,
+        associatedChamberId: "q123",
         profilePic: profilePicUrl,
         userId,
-        casesAssisted: [], // Initialize as empty array
         pern: [], // Initialize as empty array
       };
 

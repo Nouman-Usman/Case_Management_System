@@ -5,7 +5,6 @@ import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import LawyerOnboardingForm from '@/components/forms/lawyer-onboarding-form'
 
-
 export default function OnboardingComponent() {
   const { user } = useUser()
   const router = useRouter()

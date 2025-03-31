@@ -85,6 +85,7 @@ export declare interface AssistantProfile {
   city: string;
   state: string;
   zip: string;
+  associatedChamberId: string;
   country: string;
   casesAssisted: string[]; // Array of case IDs
   profilePic: string;
