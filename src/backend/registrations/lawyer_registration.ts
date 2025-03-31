@@ -1,13 +1,13 @@
 import { databases, DATABASE_ID } from "@/lib/appwrite.config";
 import type { LawyerProfile } from "@/types/index.d.ts";
-import {LAWYER_COLLECTION_ID} from "@/lib/appwrite.config";
+import {LawyerProfile_ID} from "@/lib/appwrite.config";
 
 // pass an object of type LawyerProfile
 export const registerLawyer = async (lawyerProfile: LawyerProfile) => {
   try {
     const response = await databases.createDocument(
       DATABASE_ID,
-      LAWYER_COLLECTION_ID,
+      LawyerProfile_ID, // Collection ID for LawyerProfile
       'unique()', // Generate a unique ID for the document
       lawyerProfile
     );

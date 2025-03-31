@@ -60,6 +60,7 @@ export declare interface ClientProfile {
   country: string;
   casesInvolved: string[]; // Array of case IDs
   profilePic: string;
+  verificationStatus:string;
 }
 
 export declare interface ChamberProfile {
@@ -88,6 +89,7 @@ export declare interface AssistantProfile {
   casesAssisted: string[]; // Array of case IDs
   profilePic: string;
   pern: string[]; // Array of roles
+  verificationStatus:string;
 }
 
 export declare interface Subscription {
