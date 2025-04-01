@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
@@ -17,12 +17,13 @@ import {
 } from '@/lib/appwrite.config';
 import { ID } from "appwrite";
 import getUserId from '@/utils/userId';
-import {completeOnboarding} from '@/app/onboarding/_actions';
+import { completeOnboarding } from '@/app/onboarding/_actions';
 import { useRouter } from 'next/navigation';
 import getUserEmail from '@/utils/getUserEmail';
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import type { AssistantProfile } from "@/types/index.d.ts";
+import { getChamberDetailsByAssociateId } from "@/lib/actions/associate.actions";
 
 export default function AssistantOnboardingForm() {
   const router = useRouter();
@@ -33,6 +34,23 @@ export default function AssistantOnboardingForm() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const totalSteps = 2;
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  // Fetch userId and userEmail in useEffect
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const id = await getUserId();
+        const email = await getUserEmail();
+        setUserId(id);
+        setUserEmail(email);
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+    fetchUserDetails();
+  }, []);
 
   const nextStep = () => setStep(prev => Math.min(prev + 1, totalSteps));
   const prevStep = () => setStep(prev => Math.max(prev - 1, 1));
@@ -223,12 +241,13 @@ export default function AssistantOnboardingForm() {
       return;
     }
 
-    // const userId = await getUserId();
-    // const userEmail = await getUserEmail();
-    const userId = '123';
-    const userEmail = 'await getUserEmail()';
     setIsUploading(true);
     setUploadError(null);
+
+    if (!userId || !userEmail) {
+      console.error("User ID or email is required");
+      return;
+    }
 
     try {
       let profilePicUrl = '';
@@ -242,14 +261,22 @@ export default function AssistantOnboardingForm() {
         profilePicUrl = storage.getFileView(BUCKET_ID, profilePicRef.$id);
         console.log('Profile Pic URL:', profilePicUrl);
       }
+      
+      // Fetch associatedChamberId and role using assistantId
+      const chamberDetails = await getChamberDetailsByAssociateId(userId);
+      if (!chamberDetails) {
+        throw new Error("Failed to fetch chamber details for the assistant");
+      }
 
+      const { chamberId } = chamberDetails;
+      console.log("Fetched chamberId:", chamberId);
       const formData = {
         ...data,
         email: userEmail,
-        associatedChamberId: "q123",
+        associatedChamberId: chamberId, // Use the fetched chamberId
         profilePic: profilePicUrl,
         userId,
-        pern: [], // Initialize as empty array
+        pern: [], // Initialize as an empty array
       };
 
       const resp = await databases.createDocument(
@@ -258,15 +285,17 @@ export default function AssistantOnboardingForm() {
         ID.unique(),
         formData
       );
-
+      console.log('Assistant profile created:', resp);
       if (resp.$id) {
+        console.log("Assistant profile created successfully:", resp.$id);
         const onboardingRes = await completeOnboarding('assistant');
         if (onboardingRes?.message) {
+          console.log("Onboarding completed:", onboardingRes.message);
           router.push('/assistant/dashboard');
         }
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error during onboarding:', error);
       setUploadError(error instanceof Error ? error.message : 'Failed to upload files');
     } finally {
       setIsUploading(false);

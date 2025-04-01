@@ -10,7 +10,9 @@ import { cn } from "@/lib/utils"
 import { Inter } from 'next/font/google'
 import { LawyersDataTable } from "@/components/tables/lawyers-table"
 import { addUserToClerk } from '@/lib/actions/chamber.action'
-
+import { databases, DATABASE_ID, ChamberAssociate } from "@/lib/appwrite.config"
+import { ID } from "appwrite"
+import getUserId from "@/utils/userId"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,11 +22,12 @@ export default function AddAssistantForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [showTable, setShowTable] = useState(false)
+
   const generatePassword = () => {
     setIsGenerating(true)
-    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$&*()_"
-    let generatedPassword = ""
-    for (let i = 0; i < 20; i++) {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
+    let generatedPassword = ""; // Ensure minimum requirements
+    for (let i = 4; i < 20; i++) {
       generatedPassword += chars.charAt(Math.floor(Math.random() * chars.length))
     }
     setPassword(generatedPassword)
@@ -33,21 +36,58 @@ export default function AddAssistantForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    // Handle form submission here
-    console.log({ email, password })
+    if (!email || !password) {
+      console.error("Email and password are required")
+      return
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      console.error("Invalid email format")
+      return
+    }
     try {
-      const response = await addUserToClerk(email, password, "assistant")
-      if (response) {
+      setIsLoading(true)
+
+      // Fetch the current chamber ID
+      const associatedChamberId = await getUserId()
+      if (!associatedChamberId) {
+        throw new Error("Failed to fetch the current chamber ID")
+      }
+
+      // Prepare data for addUserToClerk
+      const clerkData = {
+        emailAddress: [email],
+        password: password,
+        type: "assistant",
+      }
+
+      // Add the assistant to Clerk
+      const response = await addUserToClerk(clerkData.emailAddress[0], clerkData.password, clerkData.type)
+      if (response && response.id) {
+        const assistantId = response.id // Clerk-assigned ID for the assistant
+        console.log("Assistant added to Clerk:", assistantId)
+
+        // Store the assistant's data in Appwrite
+        const appwriteResponse = await databases.createDocument(
+          DATABASE_ID,
+          ChamberAssociate, // Collection ID for associated chamber data
+          ID.unique(), // Generate a unique ID for the document
+          {
+            chamberId: associatedChamberId,
+            role: clerkData.type,
+            associateId: assistantId,
+          }
+        )
+        console.log("Assistant data stored in Appwrite:", appwriteResponse)
+
+        // Reset form
         setEmail("")
         setPassword("")
       }
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      console.error("Error adding assistant:", error.message)
     } finally {
       setIsLoading(false)
     }
-    setIsLoading(false)
   }
 
   if (showTable) {

@@ -17,7 +17,7 @@ export default function AddLawyerForm() {
 
   const generatePassword = () => {
     const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-    let generatedPassword = "A1b@"; // Ensure minimum requirements
+    let generatedPassword = ""; // Ensure minimum requirements
     for (let i = 4; i < 20; i++) {
       generatedPassword += chars.charAt(Math.floor(Math.random() * chars.length));
     }
