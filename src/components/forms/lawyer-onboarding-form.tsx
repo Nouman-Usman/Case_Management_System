@@ -32,7 +32,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import type { LawyerProfile } from "@/types/index.d.ts";
 import { EmailAddress } from '@clerk/nextjs/server';
-
+import { getChamberDetailsByAssociateId } from "@/lib/actions/associate.actions";
 
 export default function LawyerOnboardingForm() {
   const router = useRouter();
@@ -338,11 +338,15 @@ export default function LawyerOnboardingForm() {
       return;
     }
   
-    const userId = await getUserId();
+    const userId = await getUserId(); // Fetch the lawyerId
     const username = await getData();
     const userEmail = await getUserEmail();
     setIsUploading(true);
     setUploadError(null);
+    
+    if (!userId) {
+      throw new Error("User ID is required");
+    }
   
     try {
       let profilePicUrl = '';
@@ -368,6 +372,14 @@ export default function LawyerOnboardingForm() {
         console.log('Bar License URL:', barLicenseUrl);
       }
   
+      // Fetch associatedChamberId and role using lawyerId
+      const chamberDetails = await getChamberDetailsByAssociateId(userId);
+      if (!chamberDetails) {
+        throw new Error("Failed to fetch chamber details for the lawyer");
+      }
+  
+      const { chamberId, role } = chamberDetails;
+  
       // Ensure `languages` is an array
       const languagesArray = Array.isArray(data.languages)
         ? data.languages
@@ -381,7 +393,7 @@ export default function LawyerOnboardingForm() {
         profilePic: profilePicUrl,
         barLicenseUrl,
         userId,
-        associatedChamberId: "1234",
+        associatedChamberId: chamberId, // Use the fetched chamberId
         verificationStatus: 'pending',
         languages: languagesArray, // Submit as an array
       };

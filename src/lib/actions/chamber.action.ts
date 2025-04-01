@@ -1,46 +1,55 @@
-"use server"
-import { createClerkClient } from '@clerk/nextjs/server'
+"use server";
 
-const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
-const client = clerkClient
+import { createClerkClient } from "@clerk/nextjs/server";
+
+const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+const client = clerkClient;
+
 export async function addUserToClerk(email: string, password: string, type: string) {
-    try {
-        const response = await client.users.createUser({
-            // username: "Test456240576",
-            emailAddress: [
-                email
-            ],
-            password: password
-        });
-        if (!response) {
-            throw new Error("User not authorized to access this resource");
-        }
-        else {
-            console.log(response);
-            updateMetadata(response.id, type);
-            return response;
-        }
-
-    } catch (error) {
-        console.log(error);
-        throw error; // Re-throw the error for better error handling
+  try {
+    // Basic input validation
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      throw new Error("Invalid email format");
+    }
+    if (!password || password.length < 8) {
+      throw new Error("Password must be at least 8 characters long");
     }
 
+    const response = await client.users.createUser({
+      emailAddress: [email],
+      password: password,
+    });
+
+    console.log("User created:", response);
+    await updateMetadata(response.id, type);
+
+    // Return a plain object with only the necessary data
+    return {
+      id: response.id,
+      emailAddress: response.emailAddresses[0].emailAddress,
+      createdAt: response.createdAt,
+    };
+  } catch (error: any) {
+    console.error("Error creating user:", error);
+    if (error.clerkError && error.errors) {
+      console.error("Clerk validation errors:", error.errors);
+      throw new Error(`Failed to create user: ${error.errors[0]?.message || "Unknown error"}`);
+    }
+    throw error;
+  }
 }
 
-
-function updateMetadata(userId: string, value: string) {
-    const userList = client.users.updateUserMetadata(userId,
-        {
-            publicMetadata: {
-                role: value,
-                onboardingComplete: false
-            },
-        }
-    );
-    if (!userList) {
-        throw new Error("User not authorized to access this resource");
-    }
-    // const data = userList.data;
-    // console.log(data);
+async function updateMetadata(userId: string, value: string) {
+  try {
+    const response = await client.users.updateUserMetadata(userId, {
+      publicMetadata: {
+        role: value,
+        onboardingComplete: false,
+      },
+    });
+    console.log("Metadata updated for user:", userId);
+  } catch (error) {
+    console.error("Error updating metadata:", error);
+    throw error;
+  }
 }

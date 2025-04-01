@@ -185,5 +185,9 @@ export declare interface DraftedDocuments{
   documentDate: string;
 }
 
-
+export default interface associatedChamber{
+  chamberId: string;
+  role: string;
+  associateId: string;
+}
 
