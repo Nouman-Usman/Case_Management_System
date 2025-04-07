@@ -1,18 +1,16 @@
-'use client'
 // pages/edit-document/[id].tsx
 import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { templates } from '@/data/templates'; // Adjust path as needed
 import { processTemplate, generatePDFFromMarkdown } from '@/utils/pdfUtils'; // Adjust path
-// import Header from '@/components/Header'; // Adjust path
+import Header from '@/components/Header'; // Adjust path
 import { ArrowLeft, Download, Plus, Trash2, Copy, MessageSquare, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
 const EditDocument = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const templateId = searchParams.get('id'); // Get the 'id' from the dynamic route
+  const { id: templateId } = router.query; // Get the 'id' from the dynamic route
 
   const selectedTemplate = templates.find((template) => template.id === templateId);
 
@@ -21,7 +19,7 @@ const EditDocument = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [documentTitle, setDocumentTitle] = useState('');
   const [currentLanguage, setCurrentLanguage] = useState('en');
-  const [wordBalance, setWordBalance] = useState(150000);
+  const [wordBalance, setWordBalance] = useState(1500);
 
   // Initialize form data based on template questions
   useEffect(() => {
@@ -99,6 +97,29 @@ const EditDocument = () => {
     });
   };
 
+  const handleAddPage = () => {
+    setGeneratedContent((prev) => [...prev, '']);
+    toast.success('New page added');
+  };
+
+  const handleDeletePage = (index: number) => {
+    if (generatedContent.length <= 1) {
+      toast.error('Cannot delete the only page');
+      return;
+    }
+    setGeneratedContent((prev) => prev.filter((_, i) => i !== index));
+    toast.success('Page deleted');
+  };
+
+  const handleDuplicatePage = (index: number) => {
+    setGeneratedContent((prev) => {
+      const updated = [...prev];
+      updated.splice(index + 1, 0, prev[index]);
+      return updated;
+    });
+    toast.success('Page duplicated');
+  };
+
   const handleDownloadPDF = async () => {
     try {
       await generatePDFFromMarkdown(generatedContent, documentTitle);
@@ -114,20 +135,15 @@ const EditDocument = () => {
     toast.success('Content copied to clipboard');
   };
 
-  const handleBackToTemplates = () => {
-    router.push('/lawyer/documents');
-  };
-
   if (!selectedTemplate) {
     return (
       <div className="min-h-screen bg-background">
-        {/* <Header /> */}
-
+        <Header />
         <div className="pt-32 px-6 text-center">
           <h1 className="text-2xl font-bold mb-4">Template Not Found</h1>
           <p className="text-muted-foreground mb-8">The template you're looking for doesn't exist.</p>
           <button
-            onClick={handleBackToTemplates}
+            onClick={() => router.push('/templates')}
             className="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-3 text-base font-medium text-white shadow-sm hover:bg-primary/90 transition-all duration-200"
           >
             <ArrowLeft className="mr-2 h-5 w-5" />
@@ -140,7 +156,7 @@ const EditDocument = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* <Header /> */}
+      <Header />
       <main className="pt-28 pb-20 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row gap-6">
@@ -148,7 +164,7 @@ const EditDocument = () => {
             <div className="md:w-1/3 lg:w-1/4 md:pr-4">
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
                 <button
-                  onClick={handleBackToTemplates}
+                  onClick={() => router.push('/templates')}
                   className="inline-flex items-center mb-6 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <ArrowLeft className="mr-1 h-4 w-4" />
@@ -172,8 +188,8 @@ const EditDocument = () => {
                         className="appearance-none bg-muted/50 rounded-md px-3 py-1 pr-8 text-sm font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                       >
                         <option value="en">English</option>
-                        <option value="es">Urdu</option>
-                        {/* <option value="fr">French</option> */}
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted-foreground">
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -282,6 +298,13 @@ const EditDocument = () => {
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
+                      onClick={handleAddPage}
+                      className="p-2 rounded-md hover:bg-muted transition-colors"
+                      title="Add page"
+                    >
+                      <Plus className="h-5 w-5 text-muted-foreground" />
+                    </button>
+                    <button
                       onClick={handleDownloadPDF}
                       className="inline-flex items-center py-2 px-4 rounded-md bg-primary text-white font-medium hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                     >
@@ -305,7 +328,7 @@ const EditDocument = () => {
                     />
                   </div>
 
-                  <div className="space-y-6 mb-4 mt-6 max-h-[calc(100vh-300px)] overflow-y-auto pr-2">
+                  <div className="space-y-6 mb-4 mt-6">
                     <AnimatePresence>
                       {generatedContent.map((content, index) => (
                         <motion.div
@@ -325,6 +348,21 @@ const EditDocument = () => {
                                 title="Copy content"
                               >
                                 <Copy className="h-4 w-4 text-muted-foreground" />
+                              </button>
+                              <button
+                                onClick={() => handleDuplicatePage(index)}
+                                className="p-1 rounded-md hover:bg-muted transition-colors"
+                                title="Duplicate page"
+                              >
+                                <Plus className="h-4 w-4 text-muted-foreground" />
+                              </button>
+                              <button
+                                onClick={() => handleDeletePage(index)}
+                                className="p-1 rounded-md hover:bg-muted transition-colors"
+                                title="Delete page"
+                                disabled={generatedContent.length <= 1}
+                              >
+                                <Trash2 className="h-4 w-4 text-muted-foreground" />
                               </button>
                             </div>
                           </div>

@@ -1,216 +1,297 @@
-export const templateCategories = [
-  { id: "agreements", name: "Agreements" },
-  { id: "clauses", name: "Clauses" },
-  { id: "company", name: "Company Secretary" },
-  { id: "emails", name: "Emails" },
-  { id: "general", name: "General" },
-  { id: "research", name: "Legal Research" },
-  { id: "letters", name: "Letters" },
-  { id: "forms", name: "Forms" },
-  { id: "guides", name: "Guides" },
-];
 
-export const templates = [
-  {
-    id: "SXFVD",
-    title: "Newsletter Generator",
-    description: "Generate a newsletter based on the provided information",
-    icon: "fa-solid fa-envelope-open-text",
-    category: "agreements",
-    favorite: false,
-    isPro: false,
-    isFree: false,
-    questions: [
-      "What is the main topic of the newsletter?",
-      "Who is your target audience?",
-      "What key updates or news would you like to include?",
-      "Any specific call-to-action for readers?"
-    ]
-  },
-  {
-    id: "MJ9U4",
-    title: "Purchase of Goods Agreement",
-    description: "A simple agreement to buy or sell goods",
-    icon: "fa-solid fa-file-contract",
-    category: "agreements",
-    favorite: false,
-    isPro: false,
-    isFree: false,
-    questions: [
-      "What goods are being purchased/sold?",
-      "What is the agreed price?",
-      "What are the delivery terms?",
-      "What are the payment terms?",
-      "What is the warranty period?",
-      "Are there any special conditions?"
-    ]
-  },
-  {
-    id: "VXFEW",
-    title: "Create Agreement Outline",
-    description: "Create an outline of the key clauses needed for your contract",
-    icon: "fa-solid fa-list-check",
-    category: "agreements",
-    favorite: false,
-    isPro: false,
-    isFree: false,
-    questions: [
-      "What type of agreement is being created?",
-      "What key clauses should be included?",
-      "Are there any legal requirements to consider?",
-      "What are the primary obligations of each party?"
-    ]
-  },
-  {
-    id: "TUI4I",
-    title: "One Shot Agreement Creator",
-    description: "Create an entire agreement in one go",
-    icon: "fa-solid fa-wand-magic-sparkles",
-    category: "agreements",
-    favorite: false,
-    isPro: false,
-    isFree: false,
-    questions: [
-      "What type of agreement is required?",
-      "Who are the parties involved?",
-      "What are the key terms and conditions?",
-      "Are there any specific legal considerations?"
-    ]
-  },
-  {
-    id: "CS1RU",
-    title: "Non-Disclosure Agreement",
-    description: "Create an NDA fast",
-    icon: "fa-solid fa-user-secret",
-    category: "agreements",
-    favorite: false,
-    isPro: false,
-    isFree: false,
-    questions: [
-      "Who are the parties involved?",
-      "What is the duration of the NDA?",
-      "What information is considered confidential?",
-      "What are the permitted uses of confidential information?",
-      "Are there any exclusions from confidential information?"
-    ]
-  },
-  {
-    id: "SM9LO",
-    title: "Clause Generator",
-    description: "Instantly create a custom clause for your agreement",
-    icon: "fa-solid fa-puzzle-piece",
-    category: "clauses",
-    favorite: false,
-    isPro: false,
-    isFree: false,
-    questions: [
-      "What clause do you need?",
-      "What is the legal context of this clause?",
-      "What specific language should be included?",
-      "Are there any industry-specific requirements?"
-    ]
-  },
-  {
-    id: "JOWBE",
-    title: "Explain a Clause",
-    description: "Enter a clause and get an easy-to-read explanation of it",
-    icon: "fa-solid fa-comments-question-check",
-    category: "clauses",
-    favorite: false,
-    isPro: false,
-    isFree: true,
-    questions: [
-      "What clause do you need explained?",
-      "What legal document does it belong to?",
-      "Are there any related clauses that need context?"
-    ]
-  },
-  {
-    id: "IU0FC",
-    title: "Minutes of Shareholders Meeting",
-    description: "Create Shareholders' Meeting minutes in seconds",
-    icon: "fa-solid fa-users-between-lines",
-    category: "company",
-    favorite: false,
-    isPro: false,
-    isFree: false,
-    questions: [
-      "What is the date of the meeting?",
-      "Who attended the meeting?",
-      "What agenda items were discussed?",
-      "What decisions were made?",
-      "What actions were assigned?"
-    ]
-  },
-  {
-    id: "XVNNQ",
-    title: "Follow-Up Email",
-    description: "Create a professional email follow-up with just a few clicks",
-    icon: "fa-solid fa-envelope-circle-check",
-    category: "emails",
-    favorite: false,
-    isPro: false,
-    isFree: false,
-    questions: [
-      "Who is the recipient?",
-      "What was the last interaction?",
-      "What is the purpose of the follow-up?",
-      "What is the desired outcome?"
-    ]
-  },
-  {
-    id: "NEW06",
-    title: "Legal Research Report",
-    description: "Generate a detailed legal research report.",
-    icon: "fa-solid fa-magnifying-glass-chart",
-    category: "research",
-    favorite: false,
-    isPro: true,
-    isFree: false,
-    questions: [
-      "What jurisdiction is being researched?",
-      "What specific legal questions need answering?",
-      "What type of legal sources are required?",
-      "Is there a specific time frame for the research?",
-      "What legal areas are relevant?",
-      "Are there any specific court cases or precedents to review?"
-    ]
-  },
-  {
-    id: "NEW08",
-    title: "Client Intake Form",
-    description: "Create a form to gather client information.",
-    icon: "fa-solid fa-clipboard-list-check",
-    category: "forms",
-    favorite: false,
-    isPro: false,
-    isFree: false,
-    questions: [
-      "What information needs to be collected?",
-      "Who will be filling out the form?",
-      "What fields should be mandatory?",
-      "Is an electronic signature required?",
-      "Should the form be legally binding?",
-      "What format should the form be in?"
-    ]
-  },
-  {
-    id: "NEW09",
-    title: "Legal Writing Guide",
-    description: "A guide to improve your legal writing skills.",
-    icon: "fa-solid fa-book-open-reader",
-    category: "guides",
-    favorite: false,
-    isPro: true,
-    isFree: true,
-    questions: [
-      "What is the main focus of the guide?",
-      "Who is the target audience?",
-      "What level of detail is needed?",
-      "Are there any specific examples or case studies to include?",
-      "Should the guide include step-by-step instructions?",
-      "What legal references should be included?"
-    ]
-  }
-];
+export interface Template {
+  id: string;
+  title: string;
+  description: string;
+  category: 'legal' | 'business' | 'personal';
+  questions?: {
+    question: string;
+    type: 'string' | 'text' | 'date' | 'number' | 'boolean' | 'select';
+    options?: string[];
+    required?: boolean;
+  }[];
+  template?: string;
+}
 
+export const templates: Template[] = [
+  {
+    id: 'nda-agreement',
+    title: 'Non-Disclosure Agreement',
+    description: 'A standard NDA to protect confidential information shared between parties.',
+    category: 'legal',
+    questions: [
+      {
+        question: 'Disclosing Party Name',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Disclosing Party Address',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Receiving Party Name',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Receiving Party Address',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Agreement Date',
+        type: 'date',
+        required: true,
+      },
+      {
+        question: 'Special Provisions',
+        type: 'text',
+        required: false,
+      },
+    ],
+    template: `# NON-DISCLOSURE AGREEMENT (NDA)
+
+This Nondisclosure Agreement or ("Agreement") has been entered into on the date of
+{{Agreement Date}} and is by and between:
+
+Party Disclosing Information: {{Disclosing Party Name}} with a mailing address of
+{{Disclosing Party Address}} ("Disclosing Party").
+
+Party Receiving Information: {{Receiving Party Name}} with a mailing address of
+{{Receiving Party Address}} ("Receiving Party").
+
+For the purpose of preventing the unauthorized disclosure of Confidential Information as defined
+below. The parties agree to enter into a confidential relationship concerning the disclosure of
+certain proprietary and confidential information ("Confidential Information").
+
+### 1. Definition of Confidential Information.
+For purposes of this Agreement, "Confidential Information" shall include all information or material that has or could have commercial value or other utility in the business in which Disclosing Party is engaged. If Confidential Information is in written form, the Disclosing Party shall label or stamp the materials with the word "Confidential" or some similar warning. If Confidential Information is transmitted orally, the Disclosing Party shall promptly provide writing indicating that such oral communication constituted Confidential Information.
+
+### 2. Exclusions from Confidential Information.
+Receiving Party's obligations under this Agreement do not extend to information that is: 
+(a) publicly known at the time of disclosure or
+subsequently becomes publicly known through no fault of the Receiving Party; (b) discovered or created by the Receiving Party before disclosure by Disclosing Party; 
+(c) learned by the Receiving Party through legitimate means other than from the Disclosing Party or Disclosing
+Party's representatives; or 
+(d) is disclosed by Receiving Party with Disclosing Party's prior
+written approval.
+
+### 3. Obligations of Receiving Party.
+Receiving Party shall hold and maintain the Confidential Information in strictest confidence for the sole and exclusive benefit of the Disclosing Party. Receiving Party shall carefully restrict access to Confidential Information to employees, contractors and third parties as is reasonably required and shall require those persons to sign nondisclosure restrictions at least as protective as those in this Agreement. Receiving Party shall not, without the prior written approval of Disclosing Party, use for Receiving Party's benefit, publish, copy, or otherwise disclose to others, or permit the use by others for their benefit or to the detriment of Disclosing Party, any Confidential Information. Receiving Party shall return to Disclosing Party any and all records, notes, and other written, printed, or tangible materials in its possession pertaining to Confidential Information immediately if Disclosing Party requests it in writing.
+
+### 4. Time Periods. 
+The nondisclosure provisions of this Agreement shall survive the termination
+of this Agreement and Receiving Party's duty to hold Confidential Information in confidence shall remain in effect until the Confidential Information no longer qualifies as a trade secret or until Disclosing Party sends Receiving Party written notice releasing Receiving Party from this Agreement, whichever occurs first.
+
+### 5. Relationships. 
+Nothing contained in this Agreement shall be deemed to constitute either
+party a partner, joint venture or employee of the other party for any purpose.
+
+### 6. Severability. 
+If a court finds any provision of this Agreement invalid or unenforceable, the
+remainder of this Agreement shall be interpreted so as best to affect the intent of the parties.
+
+### 7. Integration.
+This Agreement expresses the complete understanding of the parties with
+respect to the subject matter and supersedes all prior proposals, agreements, representations, and understandings. This Agreement may not be amended except in writing signed by both parties.
+
+### 8. Waiver. 
+The failure to exercise any right provided in this Agreement shall not be a waiver of prior or subsequent rights.
+
+### 9. Notice of Immunity. 
+Employee is provided notice that an individual shall not be held criminally or civilly liable under any federal or state trade secret law for the disclosure of a trade secret that is made (i) in confidence to a federal, state, or local government official, either directly or indirectly, or to an attorney; and (ii) solely for the purpose of reporting or investigating a suspected violation of law; or is made in a complaint or other document filed in a lawsuit or other proceeding, if such filing is made under seal. An individual who files a lawsuit for retaliation by an employer for reporting a suspected violation of law may disclose the trade secret to the attorney of the individual and use the trade secret information in the court proceeding, if the individual (i) files any document containing the trade secret under seal; and (ii) does not disclose the trade secret, except pursuant to court order.
+
+{{Special Provisions}}
+
+This Agreement and each party's obligations shall be binding on the representatives, assigns and successors of such party. Each party has signed this Agreement through its authorized representative.
+
+DISCLOSING PARTY
+
+Signature: __________________
+
+Typed or Printed Name: {{Disclosing Party Name}} 
+Date: _______________
+
+RECEIVING PARTY
+
+Signature: _____________________________________________________
+
+Typed or Printed Name: {{Receiving Party Name}} 
+Date: _______________`,
+  },
+  {
+    id: 'employment-agreement',
+    title: 'Employment Agreement',
+    description: 'A comprehensive employment contract outlining terms and conditions.',
+    category: 'legal',
+    questions: [
+      {
+        question: 'Employer Name',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Employer Address',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Employee Name',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Employee Address',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Start Date',
+        type: 'date',
+        required: true,
+      },
+      {
+        question: 'Job Title',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Salary',
+        type: 'number',
+        required: true,
+      },
+      {
+        question: 'Additional Terms',
+        type: 'text',
+        required: false,
+      },
+    ],
+  },
+  {
+    id: 'rental-agreement',
+    title: 'Rental Agreement',
+    description: 'A residential lease agreement between landlord and tenant.',
+    category: 'legal',
+    questions: [
+      {
+        question: 'Landlord Name',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Tenant Name',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Property Address',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Lease Term',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Monthly Rent',
+        type: 'number',
+        required: true,
+      },
+      {
+        question: 'Security Deposit',
+        type: 'number',
+        required: true,
+      },
+      {
+        question: 'Start Date',
+        type: 'date',
+        required: true,
+      },
+      {
+        question: 'End Date',
+        type: 'date',
+        required: true,
+      },
+    ],
+  },
+  {
+    id: 'invoice-template',
+    title: 'Professional Invoice',
+    description: 'A clean, professional invoice template for freelancers and businesses.',
+    category: 'business',
+    questions: [
+      {
+        question: 'Your Business Name',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Your Address',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Client Name',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Client Address',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Invoice Number',
+        type: 'string',
+        required: true,
+      },
+      {
+        question: 'Invoice Date',
+        type: 'date',
+        required: true,
+      },
+      {
+        question: 'Due Date',
+        type: 'date',
+        required: true,
+      },
+      {
+        question: 'Services Description',
+        type: 'text',
+        required: true,
+      },
+      {
+        question: 'Amount Due',
+        type: 'number',
+        required: true,
+      },
+    ],
+  },
+  {
+    id: 'business-proposal',
+    title: 'Business Proposal',
+    description: 'A template for creating professional business proposals.',
+    category: 'business',
+  },
+  {
+    id: 'resignation-letter',
+    title: 'Resignation Letter',
+    description: 'A professional and courteous resignation letter template.',
+    category: 'personal',
+  },
+  {
+    id: 'thank-you-letter',
+    title: 'Thank You Letter',
+    description: 'Express gratitude professionally with this thank you letter template.',
+    category: 'personal',
+  },
+  {
+    id: 'reference-letter',
+    title: 'Reference Letter',
+    description: 'A template for writing a professional reference or recommendation letter.',
+    category: 'personal',
+  },
+];

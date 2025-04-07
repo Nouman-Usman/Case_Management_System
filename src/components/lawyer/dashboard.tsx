@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import TemplateGrid from "../tables/template-grid"
+// Updated import path for TemplateList
+import TemplateList from "@/components/tables/TemplateList";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("all")
@@ -21,7 +22,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-xl shadow-sm  ">
           <div className="space-y-6">
             <div>
@@ -69,7 +70,9 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
+      <h3>Nouman</h3>
+      {/* <TemplateList /> */}
     </div>
   )
 }
