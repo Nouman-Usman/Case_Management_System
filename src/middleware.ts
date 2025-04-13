@@ -16,8 +16,8 @@ const isAssistantRoute = createRouteMatcher(['/assistant(.*)'])
 const isAdminRoute = createRouteMatcher(['/admin(.*)'])
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
-  // const { userId, sessionClaims, redirectToSignIn } = await auth()
-  // const metadata: { onboardingComplete?: boolean; role?: string } = sessionClaims?.metadata || {};
+  const { userId, sessionClaims, redirectToSignIn } = await auth()
+  const metadata: { onboardingComplete?: boolean; role?: string } = sessionClaims?.metadata || {};
   // if (!isPublicRoute(req)) {
   //   await auth.protect()
   // }
@@ -60,7 +60,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   //   return NextResponse.next()
   // }
 
-  // // Protect specific onboarding routes
+  // Protect specific onboarding routes
   // if (req.nextUrl.pathname === '/onboarding/lawyer' && metadata?.role !== 'lawyer') {
   //   return NextResponse.redirect(new URL('/unauthorized', req.url))
   // }

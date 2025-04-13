@@ -151,7 +151,6 @@ export const generatePDFFromMarkdown = async (markdownContent: string[], fileNam
     return Promise.reject(error);
   }
 };
-
 /**
  * Process template with provided data
  */
@@ -249,4 +248,9 @@ export const generatePDFFromHTML = async (template: string, data: Record<string,
     link.download = `${fileName}.pdf`;
     link.click();
     URL.revokeObjectURL(url);
+}
+catch (error) {
+    console.error('Error generating PDF:', error);
+    return Promise.reject(error);
+  }
 }
