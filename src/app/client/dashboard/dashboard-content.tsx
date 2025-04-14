@@ -8,8 +8,8 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 // import { LawyersDataTable } from '@/components/tables/lawyers-table'
 // import { AssistantsDataTable } from '@/components/tables/assistants-table'
 // import { CasesDataTable } from '@/components/tables/cases-table'
-import { lawyersCountAssociatedChamber,assistantCountAssociatedChamber,totalActiveCases } from '@/lib/actions/lawyer.actions'
-
+import { lawyersCountAssociatedChamber,assistantCountAssociatedChamber } from '@/lib/actions/lawyer.actions'
+import {totalActiveCases} from '@/lib/actions/client.action'
 interface DashboardContentProps {
   userId?: string
   userName?: string
