@@ -393,6 +393,7 @@ export default function LawyerOnboardingForm() {
         profilePic: profilePicUrl,
         barLicenseUrl,
         userId,
+        rating: 0,
         associatedChamberId: chamberId, // Use the fetched chamberId
         verificationStatus: 'pending',
         languages: languagesArray, // Submit as an array
