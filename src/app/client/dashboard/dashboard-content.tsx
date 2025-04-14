@@ -92,7 +92,7 @@ export default function DashboardContent({ userId, userName }: DashboardContentP
               { icon: FaComments, label: 'Chat with Lawyer', href: '#' },
               { icon: FaRobot, label: 'AI Legal Assistant', href: '#' },
               { icon: FaMoneyBillWave, label: 'Payments', href: '#' },
-              { icon: FaUserTie, label: 'Find Lawyer', href: '#' },
+              { icon: FaUserTie, label: 'Find Lawyer', href: '/client/find-lawyer' },
               { icon: FaFile, label: 'File New Case', href: '#' },
               { icon: FaQuestion, label: 'Legal Resources', href: '#' },
               { icon: FaCrown, label: 'Subscription', href: '#' },
