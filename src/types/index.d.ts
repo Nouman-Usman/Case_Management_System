@@ -46,7 +46,13 @@ export declare interface LawyerProfile {
   casesWon: number; // not required
   casesLost: number; // not required
   profilePic: string;
-  verificationStatus:string;
+  verificationStatus:string;}
+
+export declare interface LawyerAvailability{
+  lawyerId: string,
+  day: string,
+  startTime: string,
+  endTime: string,
 }
 
 export declare interface ClientProfile {

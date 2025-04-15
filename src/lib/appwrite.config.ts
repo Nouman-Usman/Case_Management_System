@@ -19,6 +19,7 @@ const CASE_ID = process.env.NEXT_PUBLIC_CASE_ID!;
 const ASSISTANTPROFILE_ID = process.env.NEXT_PUBLIC_ASSISTANTPROFILE_ID!;
 const ChamberProfileID = process.env.NEXT_PUBLIC_CHAMBER_PROFILE_COLLECTION_ID!;
 const ChamberAssociate = process.env.NEXT_PUBLIC_CHAMBER_ASSOCIATE_ID!;
+const LawyerAvailability_ID = process.env.NEXT_PUBLIC_LAWYER_AVAILABILITY_ID!;
 
 export {
     client,
@@ -35,5 +36,6 @@ export {
     ASSISTANTPROFILE_ID,
     CASE_ID,
     db,
-    ChamberAssociate
+    ChamberAssociate,
+    LawyerAvailability_ID
 };
