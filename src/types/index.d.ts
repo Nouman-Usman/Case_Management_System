@@ -40,13 +40,15 @@ export declare interface LawyerProfile {
   education: string;  //not required
   languages: string[]; //not required
   consultationFees: number;
+  consultationDuration: number; // Make sure this matches exactly with what the database expects
   rating: number;
   reviews: string[]; 
   casesHandled: number; // not required
   casesWon: number; // not required
   casesLost: number; // not required
   profilePic: string;
-  verificationStatus:string;}
+  verificationStatus:string;
+}
 
 export declare interface LawyerAvailability{
   lawyerId: string,
@@ -159,15 +161,12 @@ export declare interface Feedback {
 }
 
 export declare interface Appointment {
-  appointmentId: string;
-  userId: string; // User who booked the appointment (client or lawyer)
   lawyerId: string; // Lawyer associated with the appointment
   clientId: string; // Client associated with the appointment
   appointmentDate: string;
   appointmentTime: string;
-  appointmentType: string; // e.g., "Consultation", "Case Discussion"
+  appointmentType: string; // e.g., "Consultation", "Case Discussion", for now only consultation is there
   appointmentStatus: string; // e.g., "Scheduled", "Completed", "Cancelled"
-  notes: string;
 }
 
 export declare interface Announcements{

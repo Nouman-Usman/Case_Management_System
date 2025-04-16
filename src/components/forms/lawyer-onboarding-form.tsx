@@ -45,6 +45,7 @@ export default function LawyerOnboardingForm() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const totalSteps = 4; // Updated to 4 steps
+  const [consultationDuration, setConsultationDuration] = useState<number>(30); // Default to 30 minutes
   
   // New state for availability
   const [availability, setAvailability] = useState<{[key: string]: {available: boolean, startTime: string, endTime: string, error?: string}}>({
@@ -146,6 +147,12 @@ export default function LawyerOnboardingForm() {
       
       return newState;
     });
+  };
+
+  const handleDurationChange = (value: number) => {
+    setConsultationDuration(value);
+    // Fix the field name to ensure it matches exactly with what the database expects
+    setValue('consultationDuration', value); // Make sure this matches the field name in the database
   };
 
   const renderFormStep = () => {
@@ -257,28 +264,54 @@ export default function LawyerOnboardingForm() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="consultationFees">Consultation Fees</Label>
+                      <Label htmlFor="consultationDuration">Consultation Duration (min)</Label>
+                      <Select 
+                        defaultValue="30" 
+                        onValueChange={(value) => handleDurationChange(parseInt(value))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Duration" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-52 overflow-y-auto">
+                          {Array.from({ length: 36 }, (_, i) => (i + 1) * 5).map(mins => (
+                            <SelectItem key={mins} value={mins.toString()}>
+                              {mins} {mins === 1 ? 'minute' : 'minutes'}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input 
+                        type="hidden" 
+                        {...register('consultationDuration', { required: true, valueAsNumber: true })} 
+                        value={consultationDuration}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="consultationFees">
+                        Consultation Fees /{consultationDuration}min
+                      </Label>
                       <Input
-                      id="consultationFees"
-                      type="number"
-                      placeholder="Consultation Fees"
-                      {...register('consultationFees', { required: true, valueAsNumber: true })}
-                      className={`border ${errors.consultationFees ? 'border-red-500' : 'border-gray-300'}`}
+                        id="consultationFees"
+                        type="number"
+                        placeholder={`Consultation Fees /${consultationDuration}min`}
+                        {...register('consultationFees', { required: true, valueAsNumber: true })}
+                        className={`border ${errors.consultationFees ? 'border-red-500' : 'border-gray-300'}`}
                       />
                       {errors.consultationFees && <p className="text-red-500 text-sm">Consultation fees are required</p>}
-                    </div></div>
-                      <div className="space-y-2">
-                        <Label htmlFor="barCouncilNumber">Bar Council Number</Label>
-                        <Input
-                          id="barCouncilNumber"
-                          placeholder="Bar Council Number"
-                          {...register('barCouncilNumber', { required: true })}
-                          className={`border ${errors.barCouncilNumber ? 'border-red-500' : 'border-gray-300'}`}
-                        />
-                        {errors.barCouncilNumber && <p className="text-red-500 text-sm">Bar Council Number is required</p>}
-                      </div>
                     </div>
-                )}
+                    <div className="space-y-2">
+                      <Label htmlFor="barCouncilNumber">Bar Council Number</Label>
+                      <Input
+                        id="barCouncilNumber"
+                        placeholder="Bar Council Number"
+                        {...register('barCouncilNumber', { required: true })}
+                        className={`border ${errors.barCouncilNumber ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      {errors.barCouncilNumber && <p className="text-red-500 text-sm">Bar Council Number is required</p>}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {step === 2 && (
                 <div className="space-y-6">
@@ -451,8 +484,10 @@ export default function LawyerOnboardingForm() {
       return;
     }
   
-    const userId = await getUserId(); // Fetch the lawyerId
-    const userEmail = await getUserEmail();
+    // const userId = await getUserId(); // Fetch the lawyerId
+    // const userEmail = await getUserEmail();
+    const userId = "lawyer1"; // Fetch the lawyerId
+    const userEmail = "lawyer1@gmail.com";
     setIsUploading(true);
     setUploadError(null);
     
@@ -471,7 +506,6 @@ export default function LawyerOnboardingForm() {
           selectedProfilePic
         );
         profilePicUrl = storage.getFileView(BUCKET_ID, profilePicRef.$id);
-        console.log('Profile Pic URL:', profilePicUrl);
       }
   
       if (selectedLicense) {
@@ -481,11 +515,11 @@ export default function LawyerOnboardingForm() {
           selectedLicense
         );
         barLicenseUrl = storage.getFileView(BUCKET_ID, licenseRef.$id);
-        console.log('Bar License URL:', barLicenseUrl);
       }
   
       // Fetch associatedChamberId and role using lawyerId
-      const chamberDetails = await getChamberDetailsByAssociateId(userId);
+      // const chamberDetails = await getChamberDetailsByAssociateId(userId);
+      const chamberDetails = {chamberId:"123", role:"lawyer"}; // Fetch associatedChamberId and role using lawyerId
       
       if (!chamberDetails) {
         throw new Error("Failed to fetch chamber details for the lawyer");
@@ -509,8 +543,10 @@ export default function LawyerOnboardingForm() {
         rating: 0,
         associatedChamberId: chamberId, // Use the fetched chamberId
         verificationStatus: 'pending',
-        languages: languagesArray, // Submit as an array
+        languages: languagesArray, 
+        consultationDuration: consultationDuration, 
       };
+
   
       // Create lawyer profile
       const resp = await databases.createDocument(
@@ -519,17 +555,14 @@ export default function LawyerOnboardingForm() {
         ID.unique(),
         formData
       );
-      console.log("Stored lawyer data");
       
       // Store availability separately - one at a time instead of using Promise.all
       const availableDays = Object.entries(availability)
         .filter(([_, value]) => value.available);
       
-      console.log(`Attempting to store ${availableDays.length} availability records`);
       
       for (const [day, value] of availableDays) {
         try {
-          console.log(`Storing availability for ${day}`);
           await databases.createDocument(
             DATABASE_ID,
             LawyerAvailability_ID,
@@ -540,15 +573,13 @@ export default function LawyerOnboardingForm() {
               startTime: value.startTime,
               endTime: value.endTime
             }
-          );
-          console.log(`Successfully stored availability for ${day}`);
+          )
         } catch (error) {
           console.error(`Error storing availability for ${day}:`, error);
           // Continue with the loop even if one day fails
         }
       }
       
-      console.log("Completed availability storage process");
       
       if (resp.$id) {
         const onboardingRes = await completeOnboarding('lawyer');
@@ -558,7 +589,12 @@ export default function LawyerOnboardingForm() {
       }
     } catch (error) {
       console.error('Error:', error);
-      setUploadError(error instanceof Error ? error.message : 'Failed to upload files');
+      // Display more detailed error information
+      if (error instanceof Error) {
+        setUploadError(error.message);
+      } else {
+        setUploadError('Failed to upload files');
+      }
     } finally {
       setIsUploading(false);
     }
