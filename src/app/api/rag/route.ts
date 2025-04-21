@@ -32,7 +32,7 @@ class RAGAgent {
         });
 
         this.llm = new ChatGroq({
-            model: "gemma2-9b-it",
+            model: "meta-llama/llama-4-scout-17b-16e-instruct",
             apiKey: GROQ_API_KEY,
         });
 
@@ -109,6 +109,31 @@ Return only 'None' for non-legal text, or just the category name for legal text 
         return "None";
     }
 
+    /**
+     * Draft a legal contract based on user instructions and contract type.
+     * @param contractType The type of contract (e.g. "rental agreement", "employment contract")
+     * @param instructions Additional instructions or clauses from the user
+     * @returns Drafted contract text
+     */
+    async draftContract(contractType: string, instructions: string) {
+        const prompt = ChatPromptTemplate.fromTemplate(
+            `You are a legal contract drafting assistant for Pakistani law.
+Draft a {contractType} in clear, professional legal language.
+Follow these user instructions or clauses: {instructions}
+Format the contract with appropriate headings, sections, and bullet points where needed.
+Return only the drafted contract in Markdown format.`
+        );
+        const chain = prompt.pipe(this.llm);
+        const result: any = await chain.invoke({
+            contractType,
+            instructions,
+        });
+        // result may be an object or string depending on LLM output
+        if (typeof result === "string") return result;
+        if (typeof result === "object" && result !== null && "content" in result) return String(result.content);
+        return "Could not generate contract.";
+    }
+
     async getResult(question: string) {
         if (!this.vectorStore) {
             await this.initialize();
@@ -164,6 +189,21 @@ export async function POST(req: Request) {
     } catch (err) {
         // Log error for debugging
         console.error('RAG API Error:', err);
+        return new Response(JSON.stringify({ error: 'Internal server error', details: String(err) }), { status: 500 });
+    }
+}
+
+// --- API handler for /api/rag/draft ---
+export async function POST_DRAFT(req: Request) {
+    try {
+        const { contractType, instructions } = await req.json();
+        if (!contractType || typeof contractType !== 'string') {
+            return new Response(JSON.stringify({ error: 'Invalid contractType' }), { status: 400 });
+        }
+        const draft = await ragAgent.draftContract(contractType, instructions || "");
+        return new Response(JSON.stringify({ draft }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } catch (err) {
+        console.error('Draft Contract API Error:', err);
         return new Response(JSON.stringify({ error: 'Internal server error', details: String(err) }), { status: 500 });
     }
 }
