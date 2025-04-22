@@ -25,7 +25,7 @@ export default function OnboardingComponent() {
 
   const renderForm = () => {
     const role = user?.publicMetadata?.role as string
-    if (role !== selectedRole) {
+    if (role == selectedRole) {
       return null
     }
 

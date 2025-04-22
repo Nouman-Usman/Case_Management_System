@@ -16,16 +16,8 @@ import getUserId from '@/utils/userId';
 import { completeOnboarding } from '@/app/onboarding/_actions';
 import { useRouter } from 'next/navigation'
 import getData from "@/utils/getUserData"
+import type { ClientProfile } from "@/types/index.d.ts";
 
-interface ClientProfile {
-  phone: string;
-  address: string;
-  city: string;
-  state: string;
-  zip: number;
-  country: string;
-  profilePicUrl: string;
-}
 
 export default function ClientOnboardingForm() {
   const router = useRouter();
@@ -51,7 +43,7 @@ export default function ClientOnboardingForm() {
   const onSubmit = async (data: ClientProfile) => {
     try {
       const userId = await getUserId();
-      const username = await getData();
+      // const username = await getData();
       setIsUploading(true);
       setUploadError(null);
 
@@ -69,7 +61,7 @@ export default function ClientOnboardingForm() {
           zip: parseInt(data.zip.toString(), 10),
           profilePicUrl: fileUrl,
           userId: userId,
-          Name: username
+          // Name: username
         };
         console.log(" Form Data is: ", formData)
 
@@ -121,6 +113,15 @@ export default function ClientOnboardingForm() {
             type="tel"
             placeholder='03000000000'
             {...register('phone', { required: 'Phone is required' })}
+            className="mt-1 block w-full rounded-md border p-2"
+          />
+        </div>
+        <div>
+          <label htmlFor="Name" className="block text-sm font-medium">Name</label>
+          <input
+            type="text"
+            placeholder='Jone'
+            {...register('name', { required: 'Name is required' })}
             className="mt-1 block w-full rounded-md border p-2"
           />
         </div>
