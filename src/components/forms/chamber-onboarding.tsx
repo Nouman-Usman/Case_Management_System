@@ -71,7 +71,6 @@ export default function ChamberOnboardingForm() {
           zip: parseInt(data.zip.toString(), 10),
           profilePicUrl: fileUrl,
           userId: userId,
-          userName: username
         };
 
         const resp = await databases.createDocument(

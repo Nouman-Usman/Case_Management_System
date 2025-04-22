@@ -39,46 +39,46 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.redirect(new URL('/unauthorized', req.url))
   }
 
-  // Base onboarding route handling with role protection
-  if (req.nextUrl.pathname === '/onboarding') {
-    if (!userId) return redirectToSignIn({ returnBackUrl: req.url })
-    if (metadata?.role === 'lawyer') {
-      return NextResponse.redirect(new URL('/onboarding/lawyer', req.url))
-    }
-    if (metadata?.role === 'assistant') {
-      return NextResponse.redirect(new URL('/onboarding/assistant', req.url))
-    }
+  // // Base onboarding route handling with role protection
+  // if (req.nextUrl.pathname === '/onboarding') {
+  //   if (!userId) return redirectToSignIn({ returnBackUrl: req.url })
+  //   if (metadata?.role === 'lawyer') {
+  //     return NextResponse.redirect(new URL('/onboarding/lawyer', req.url))
+  //   }
+  //   if (metadata?.role === 'assistant') {
+  //     return NextResponse.redirect(new URL('/onboarding/assistant', req.url))
+  //   }
     
 
-    if (metadata?.onboardingComplete) {
-      return NextResponse.redirect(new URL(`/${metadata.role}/dashboard`, req.url))
-    }
-    // Only allow specific roles to access base onboarding
-    // if (!['client', 'chamber', 'lawyer', 'assistant'].includes(metadata?.role || '')) {
-    //   return NextResponse.redirect(new URL('/', req.url))
-    // }
-    return NextResponse.next()
-  }
+  //   if (metadata?.onboardingComplete) {
+  //     return NextResponse.redirect(new URL(`/${metadata.role}/dashboard`, req.url))
+  //   }
+  //   // Only allow specific roles to access base onboarding
+  //   // if (!['client', 'chamber', 'lawyer', 'assistant'].includes(metadata?.role || '')) {
+  //   //   return NextResponse.redirect(new URL('/', req.url))
+  //   // }
+  //   return NextResponse.next()
+  // }
 
-  // Protect specific onboarding routes
-  if (req.nextUrl.pathname === '/onboarding/lawyer' && metadata?.role !== 'lawyer') {
-    return NextResponse.redirect(new URL('/unauthorized', req.url))
-  }
-  if (req.nextUrl.pathname === '/onboarding/assistant' && metadata?.role !== 'assistant') {
-    return NextResponse.redirect(new URL('/unauthorized', req.url))
-  }
+  // // Protect specific onboarding routes
+  // if (req.nextUrl.pathname === '/onboarding/lawyer' && metadata?.role !== 'lawyer') {
+  //   return NextResponse.redirect(new URL('/unauthorized', req.url))
+  // }
+  // if (req.nextUrl.pathname === '/onboarding/assistant' && metadata?.role !== 'assistant') {
+  //   return NextResponse.redirect(new URL('/unauthorized', req.url))
+  // }
 
-  // Handle completed users trying to access public routes
-  if (userId && isPublicRoute(req) && metadata?.onboardingComplete) {
-    return NextResponse.redirect(new URL(`/${metadata.role}/dashboard`, req.url))
-  }
+  // // Handle completed users trying to access public routes
+  // if (userId && isPublicRoute(req) && metadata?.onboardingComplete) {
+  //   return NextResponse.redirect(new URL(`/${metadata.role}/dashboard`, req.url))
+  // }
 
-  // Handle unauthenticated users
-  if (!userId && !isPublicRoute(req)) {
-    return redirectToSignIn({ returnBackUrl: req.url })
-  }
+  // // Handle unauthenticated users
+  // if (!userId && !isPublicRoute(req)) {
+  //   return redirectToSignIn({ returnBackUrl: req.url })
+  // }
 
-  return NextResponse.next()
+  // return NextResponse.next()
 })
 
 export const config = {
