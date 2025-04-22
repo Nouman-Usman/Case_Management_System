@@ -152,7 +152,7 @@ Return only the drafted contract in Markdown format.`
                 // ...doc.metadata
             }
         }));
-        console.log("RAG contextDocs:", contextDocs.map(d => d.metadata));
+        // console.log("RAG contextDocs:", contextDocs.map(d => d.metadata));
 
         const refrences = contextDocs.map(d => d.metadata.filename); 
         const context: string = contextDocs.map(d => d.pageContent).join('\n');
@@ -166,7 +166,7 @@ Return only the drafted contract in Markdown format.`
             question,
             context,
         });
-        console.log("RAG result:", result.content);
+        // console.log("RAG result:", result.content);
         // Return both the answer and the contextDocs (with metadata)
         return { answer: result.content, refrences };
     }

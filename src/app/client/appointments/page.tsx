@@ -30,7 +30,7 @@ export default async function AppointmentsPage() {
     // });
     // console.log(res);
 
-    const res = await getAvailableTimeByDate('2025-04-19')
+    const res = await getAvailableTimeByDate('2025-04-22')
     return (
         <div className="flex flex-col items-center justify-center min-h-screen py-2">
             <h1 className="text-4xl font-bold">Appointments</h1>
