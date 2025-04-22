@@ -484,10 +484,10 @@ export default function LawyerOnboardingForm() {
       return;
     }
   
-    // const userId = await getUserId(); // Fetch the lawyerId
-    // const userEmail = await getUserEmail();
-    const userId = "lawyer1"; // Fetch the lawyerId
-    const userEmail = "lawyer1@gmail.com";
+    const userId = await getUserId(); // Fetch the lawyerId
+    const userEmail = await getUserEmail();
+    // const userId = "lawyer1"; // Fetch the lawyerId
+    // const userEmail = "lawyer1@gmail.com";
     setIsUploading(true);
     setUploadError(null);
     
@@ -518,8 +518,8 @@ export default function LawyerOnboardingForm() {
       }
   
       // Fetch associatedChamberId and role using lawyerId
-      // const chamberDetails = await getChamberDetailsByAssociateId(userId);
-      const chamberDetails = {chamberId:"123", role:"lawyer"}; // Fetch associatedChamberId and role using lawyerId
+      const chamberDetails = await getChamberDetailsByAssociateId(userId);
+      // const chamberDetails = {chamberId:"123", role:"lawyer"}; // Fetch associatedChamberId and role using lawyerId
       
       if (!chamberDetails) {
         throw new Error("Failed to fetch chamber details for the lawyer");
@@ -542,7 +542,7 @@ export default function LawyerOnboardingForm() {
         userId,
         rating: 0,
         associatedChamberId: chamberId, // Use the fetched chamberId
-        verificationStatus: 'pending',
+        verificationStatus: 'approved',
         languages: languagesArray, 
         consultationDuration: consultationDuration, 
       };

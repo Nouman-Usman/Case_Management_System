@@ -31,7 +31,8 @@ import {
   DialogTrigger 
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
-import { StarIcon, FilterIcon, MapPinIcon, DollarSignIcon, BriefcaseIcon, GlobeIcon, PhoneIcon, MailIcon } from 'lucide-react'
+import { StarIcon, FilterIcon, MapPinIcon, DollarSignIcon, BriefcaseIcon, GlobeIcon, PhoneIcon, MailIcon, UserIcon } from 'lucide-react'
+import Image from 'next/image'
 
 export function LawyerListing() {
   const [lawyers, setLawyers] = useState<LawyerProfile[]>([])
@@ -270,6 +271,9 @@ export function LawyerListing() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Card key={i} className="animate-pulse">
+              <div className="p-4">
+                <div className="h-24 w-24 rounded-full bg-gray-200 mx-auto mb-4"></div>
+              </div>
               <CardHeader className="h-24 bg-gray-200 rounded-t-lg"></CardHeader>
               <CardContent className="pt-4">
                 <div className="h-4 bg-gray-200 rounded mb-3"></div>
@@ -287,6 +291,22 @@ export function LawyerListing() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {lawyers.map((lawyer) => (
             <Card key={lawyer.userId} className="overflow-hidden">
+              <div className="p-4 flex justify-center">
+                {lawyer.profilePic ? (
+                  <div className="relative h-24 w-24 rounded-full overflow-hidden">
+                    <Image 
+                      src={lawyer.profilePic} 
+                      alt={`${lawyer.name}'s profile`} 
+                      fill 
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center">
+                    <UserIcon className="h-12 w-12 text-gray-400" />
+                  </div>
+                )}
+              </div>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <div>
@@ -335,10 +355,28 @@ export function LawyerListing() {
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[600px]">
                     <DialogHeader>
-                      <DialogTitle>{lawyer.name}</DialogTitle>
-                      <div className="flex items-center gap-1">
-                        {renderStars(lawyer.rating)}
-                        <span className="ml-1 text-sm text-gray-500">{lawyer.rating.toFixed(1)} ({lawyer.reviews || 0} reviews)</span>
+                      <div className="flex items-center gap-4 mb-4">
+                        {lawyer.profilePic ? (
+                          <div className="relative h-20 w-20 rounded-full overflow-hidden">
+                            <Image 
+                              src={lawyer.profilePic} 
+                              alt={`${lawyer.name}'s profile`} 
+                              fill 
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center">
+                            <UserIcon className="h-10 w-10 text-gray-400" />
+                          </div>
+                        )}
+                        <div>
+                          <DialogTitle>{lawyer.name}</DialogTitle>
+                          <div className="flex items-center gap-1">
+                            {renderStars(lawyer.rating)}
+                            <span className="ml-1 text-sm text-gray-500">{lawyer.rating.toFixed(1)} ({lawyer.reviews || 0} reviews)</span>
+                          </div>
+                        </div>
                       </div>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
