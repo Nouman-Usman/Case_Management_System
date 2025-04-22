@@ -21,7 +21,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   if (!isPublicRoute(req)) {
     await auth.protect()
   }
-
+  console.log("Use Role is:", metadata?.role);
   // Protect role-specific routes
   if (isClientRoute(req) && metadata?.role !== 'client') {
     return NextResponse.redirect(new URL('/unauthorized', req.url))
